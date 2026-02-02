@@ -9,9 +9,11 @@ function App() {
 
     {
       element: (
-        <div>
+        <div className="app-layout">
           <Header />
-          <Outlet />
+          <main className='content'>
+            <Outlet />
+          </main>
           <Footer />
         </div>
       ),

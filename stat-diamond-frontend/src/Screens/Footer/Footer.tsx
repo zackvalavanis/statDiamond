@@ -2,6 +2,8 @@ import './Footer.css'
 
 export function Footer() {
   return (
-    <h1>Footer</h1>
+    <div className='footer-container'>
+      <footer id='footer'>Stat Diamond</footer>
+    </div>
   )
 }
