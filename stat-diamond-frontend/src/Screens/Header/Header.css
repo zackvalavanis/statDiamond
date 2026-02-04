@@ -1,22 +1,18 @@
 header {
   width: 100%;
-  height: 100px;
+  height: 125px;
   display: flex;
-  align-items: flex-end;
-  /* everything sits at bottom */
-  justify-content: flex-start;
-  /* align to left */
   padding: 0 40px;
   box-sizing: border-box;
-  gap: 80px;
+  gap: 60px;
   /* space between Stat Diamond and links */
 }
 
 .stat-diamond {
-  font-size: 30px;
+  font-size: 50px;
   color: white;
   text-decoration: none;
-  align-self: flex-end;
+  align-self: center;
   /* bottom-align even with smaller links */
 }
 
@@ -30,7 +26,7 @@ header {
   font-size: 20px;
   color: white;
   text-decoration: none;
-  align-self: flex-end;
+  align-self: center;
   /* bottom-align links */
 }
 
