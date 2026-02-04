@@ -1,7 +1,12 @@
 import './MainPage.css'
+import logo from '../../assets/StatDiamondLogo.png'
 
 export function MainPage() {
   return (
-    <h1>MainPage</h1>
+    <>
+      <div className='logo-container'>
+        <img className='logo' src={logo} />
+      </div>
+    </>
   )
 }

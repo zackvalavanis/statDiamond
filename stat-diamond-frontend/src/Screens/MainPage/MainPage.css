@@ -1,0 +1,12 @@
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.logo {
+  height: 800px;
+  width: auto;
+  cursor: pointer;
+
+}
