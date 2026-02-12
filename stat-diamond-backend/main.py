@@ -11,6 +11,35 @@ app = FastAPI()
 def root(): 
   return { "status": "Backend Running"}
 
+@app.get('/stats/dummy')
+def get_dummy_player(): 
+  return {
+    "id": 1, 
+    "name": "Mike Trout", 
+    'first_name': "Mike", 
+    'last_name': 'Trout', 
+    'position': 'CF', 
+    'team': 'LAA', 
+    'batting_avg': 0.283, 
+    'home_runs': 40, 
+    'rbi': 104,
+    'ops': 0.988, 
+    'stats_2024': { 
+      'games': 119,
+      'at_bats': 436, 
+      'hits': 123,
+      "doubles": 20,
+      "triples": 1,
+      "strikeouts": 103,
+      "walks": 79
+    }
+  }
+
+
+
+
+# pyBaseball API 
+
 @app.get('/statcast')
 def get_statcast_data(): 
   data = statcast(start_dt="2025-06-24",end_dt="2025-06-25")
