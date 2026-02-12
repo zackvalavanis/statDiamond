@@ -3,6 +3,7 @@ import { Header } from './Screens/Header/Header'
 import { Footer } from './Screens/Footer/Footer'
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { MainPage } from './Screens/MainPage/MainPage'
+import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
 
 function App() {
   const router = createBrowserRouter([
@@ -18,7 +19,8 @@ function App() {
         </div>
       ),
       children: [
-        { path: '/', element: <MainPage /> }
+        { path: '/', element: <MainPage /> },
+        { path: '/player', element: <PlayerPage /> }
       ]
     }
   ])
