@@ -4,6 +4,7 @@ import { Footer } from './Screens/Footer/Footer'
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { MainPage } from './Screens/MainPage/MainPage'
 import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
+import { Login } from './Screens/Auth/Login'
 
 function App() {
   const router = createBrowserRouter([
@@ -20,7 +21,8 @@ function App() {
       ),
       children: [
         { path: '/', element: <MainPage /> },
-        { path: '/player', element: <PlayerPage /> }
+        { path: '/player', element: <PlayerPage /> },
+        { path: '/login', element: <Login /> }
       ]
     }
   ])

@@ -1,6 +1,6 @@
 import './PlayerPage.css'
 import { PlayerModal } from './PlayerModal'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 
 // interface Player {

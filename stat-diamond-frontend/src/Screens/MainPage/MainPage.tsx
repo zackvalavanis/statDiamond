@@ -15,11 +15,11 @@ export function MainPage() {
     <>
       <div className='logo-container'>
         <img className='logo' src={logo} />
-        <ModalHome
+        {/* <ModalHome
           show={modalShowing}
           onClose={() => setModalShowing(false)}
-        />
-        <button onClick={openModal}>Open Modal</button>
+        /> */}
+        {/* <button onClick={openModal}>Open Modal</button> */}
       </div>
     </>
   )
