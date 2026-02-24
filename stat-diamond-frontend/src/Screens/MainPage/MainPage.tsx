@@ -1,15 +1,17 @@
 import './MainPage.css'
 import logo from '../../assets/StatDiamondLogo.png'
-import { ModalHome } from './Modal-home'
-import { useState } from 'react'
+// import { ModalHome } from './Modal-home'
+// import { useState } from 'react'
 
 
 export function MainPage() {
-  const [modalShowing, setModalShowing] = useState(false)
+  const user = localStorage.getItem('token')
+  console.log(user)
+  // const [modalShowing, setModalShowing] = useState(false)
 
-  const openModal = () => {
-    setModalShowing(true)
-  }
+  // const openModal = () => {
+  //   setModalShowing(true)
+  // }
 
   return (
     <>

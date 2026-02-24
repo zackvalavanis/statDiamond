@@ -24,16 +24,21 @@ header {
 
 
 
+
 .header-links a {
   font-size: 20px;
   color: white;
   text-decoration: none;
   align-self: center;
+  padding: 10px;
   /* bottom-align links */
 }
 
 .header-links a:hover {
   color: burlywood;
+  background-color: rgb(58, 58, 58);
+  border-radius: 20px;
+
 }
 
 .stat-diamond:hover {
