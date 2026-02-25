@@ -1,17 +1,14 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 interface CreateUserInfo {
-  first_name: string
-  last_name: string
-  username: string
+  name: string
   email: string
   password: string
 }
 
 const fields = [
-  { name: 'first_name', label: 'First Name', type: 'text' },
-  { name: 'last_name', label: 'Last Name', type: 'text' },
-  { name: 'username', label: 'username', type: 'text' },
+  { name: 'name', label: 'Name', type: 'text' },
   { name: 'email', label: 'email', type: 'email' },
   { name: 'password', label: 'password', type: 'password' },
 ]
@@ -19,16 +16,36 @@ const fields = [
 
 
 export function CreateUser() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<CreateUserInfo>({
-    first_name: '',
-    last_name: '',
-    username: '',
+    name: "",
     email: '',
     password: ''
   })
 
+  const handleCreateUser = async (formData: CreateUserInfo) => {
+    try {
+      const res = await fetch("http://localhost:8000/api/auth/signup", {
+        "method": 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      const data = await res.json()
+      console.log('user data', data)
+      if (data) {
+        alert("User Created")
+      }
+      navigate('/')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
+    handleCreateUser(formData)
     console.log(formData)
   }
 

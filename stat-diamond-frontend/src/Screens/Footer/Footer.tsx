@@ -11,7 +11,6 @@ export function Footer() {
     }
   }
 
-
   return (
     <div>
       <div className='footer-container'>
@@ -20,7 +19,9 @@ export function Footer() {
           {userLoggedIn && (
             <button onClick={handleLogout}>Logout</button>
           )}
+          <Link to='/create-account'>New Account</Link>
         </footer>
+
 
       </div>
 
