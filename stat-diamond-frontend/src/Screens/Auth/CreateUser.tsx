@@ -8,11 +8,10 @@ interface CreateUserInfo {
 }
 
 const fields = [
-  { name: 'name', label: 'Name', type: 'text' },
+  { name: 'first_name', label: 'Name', type: 'text' },
   { name: 'email', label: 'email', type: 'email' },
   { name: 'password', label: 'password', type: 'password' },
 ]
-
 
 
 export function CreateUser() {
