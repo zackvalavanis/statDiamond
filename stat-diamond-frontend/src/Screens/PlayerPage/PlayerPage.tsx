@@ -15,12 +15,36 @@ export function PlayerPage() {
   const [players, setPlayers] = useState<Player[]>([])
   const [isModalShowing, setIsModalShowing] = useState(false)
   const teams = [
-    "ARI", "ATL", "BAL", "BOS", "CHC",
-    "CHW", "CIN", "CLE", "COL", "DET",
-    "HOU", "KC", "LAA", "LAD", "MIA",
-    "MIL", "MIN", "NYM", "NYY", "OAK",
-    "PHI", "PIT", "SD", "SF", "SEA",
-    "STL", "TB", "TEX", "TOR", "WSH",
+    { abbr: "ARI", name: "Arizona Diamondbacks" },
+    { abbr: "ATL", name: "Atlanta Braves" },
+    { abbr: "BAL", name: "Baltimore Orioles" },
+    { abbr: "BOS", name: "Boston Red Sox" },
+    { abbr: "CHC", name: "Chicago Cubs" },
+    { abbr: "CHW", name: "Chicago White Sox" },
+    { abbr: "CIN", name: "Cincinnati Reds" },
+    { abbr: "CLE", name: "Cleveland Guardians" },
+    { abbr: "COL", name: "Colorado Rockies" },
+    { abbr: "DET", name: "Detroit Tigers" },
+    { abbr: "HOU", name: "Houston Astros" },
+    { abbr: "KC", name: "Kansas City Royals" },
+    { abbr: "LAA", name: "Los Angeles Angels" },
+    { abbr: "LAD", name: "Los Angeles Dodgers" },
+    { abbr: "MIA", name: "Miami Marlins" },
+    { abbr: "MIL", name: "Milwaukee Brewers" },
+    { abbr: "MIN", name: "Minnesota Twins" },
+    { abbr: "NYM", name: "New York Mets" },
+    { abbr: "NYY", name: "New York Yankees" },
+    { abbr: "OAK", name: "Oakland Athletics" },
+    { abbr: "PHI", name: "Philadelphia Phillies" },
+    { abbr: "PIT", name: "Pittsburgh Pirates" },
+    { abbr: "SD", name: "San Diego Padres" },
+    { abbr: "SF", name: "San Francisco Giants" },
+    { abbr: "SEA", name: "Seattle Mariners" },
+    { abbr: "STL", name: "St. Louis Cardinals" },
+    { abbr: "TB", name: "Tampa Bay Rays" },
+    { abbr: "TEX", name: "Texas Rangers" },
+    { abbr: "TOR", name: "Toronto Blue Jays" },
+    { abbr: "WSH", name: "Washington Nationals" },
   ];
   const [selectedTeam, setSelectedTeam] = useState('')
   const filteredPlayers = selectedTeam ? players.filter((p) => p.team == selectedTeam) : players
@@ -55,36 +79,11 @@ export function PlayerPage() {
     <div>
       <select onChange={(e) => setSelectedTeam(e.target.value)}>
         <option value="">Select a team</option>
-        <option value="ARI">Arizona Diamondbacks</option>
-        <option value="ATL">Atlanta Braves</option>
-        <option value="BAL">Baltimore Orioles</option>
-        <option value="BOS">Boston Red Sox</option>
-        <option value="CHC">Chicago Cubs</option>
-        <option value="CHW">Chicago White Sox</option>
-        <option value="CIN">Cincinnati Reds</option>
-        <option value="CLE">Cleveland Guardians</option>
-        <option value="COL">Colorado Rockies</option>
-        <option value="DET">Detroit Tigers</option>
-        <option value="HOU">Houston Astros</option>
-        <option value="KC">Kansas City Royals</option>
-        <option value="LAA">Los Angeles Angels</option>
-        <option value="LAD">Los Angeles Dodgers</option>
-        <option value="MIA">Miami Marlins</option>
-        <option value="MIL">Milwaukee Brewers</option>
-        <option value="MIN">Minnesota Twins</option>
-        <option value="NYM">New York Mets</option>
-        <option value="NYY">New York Yankees</option>
-        <option value="OAK">Oakland Athletics</option>
-        <option value="PHI">Philadelphia Phillies</option>
-        <option value="PIT">Pittsburgh Pirates</option>
-        <option value="SD">San Diego Padres</option>
-        <option value="SF">San Francisco Giants</option>
-        <option value="SEA">Seattle Mariners</option>
-        <option value="STL">St. Louis Cardinals</option>
-        <option value="TB">Tampa Bay Rays</option>
-        <option value="TEX">Texas Rangers</option>
-        <option value="TOR">Toronto Blue Jays</option>
-        <option value="WSH">Washington Nationals</option>
+        {teams.map((team) => (
+          <option key={team.abbr} value={team.abbr}>
+            {team.name}
+          </option>
+        ))}
       </select>
       {filteredPlayers.map((player) => (
         <div key={player.id}>
