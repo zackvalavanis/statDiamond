@@ -1,11 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import type { CreateUserInfo } from "../../types/types"
 
-interface CreateUserInfo {
-  name: string
-  email: string
-  password: string
-}
+
 
 const fields = [
   { name: 'first_name', label: 'Name', type: 'text' },

@@ -1,11 +1,4 @@
-
-
-
-interface ModalHomeProps {
-  show: boolean
-  onClose: () => void
-}
-
+import type { ModalHomeProps } from "../../types/types"
 
 export function ModalHome({ show, onClose }: ModalHomeProps) {
   if (!show) return null

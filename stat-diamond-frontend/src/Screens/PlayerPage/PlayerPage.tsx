@@ -1,16 +1,7 @@
 import './PlayerPage.css'
 import { PlayerModal } from './PlayerModal'
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-
-
-interface Player {
-  id: number
-  name: string
-  batting_avg: number
-  position: string
-  team: string
-}
+import type { Player } from '../../types/types'
 
 export function PlayerPage() {
   const [players, setPlayers] = useState<Player[]>([])
@@ -49,7 +40,7 @@ export function PlayerPage() {
   ];
   const [selectedTeam, setSelectedTeam] = useState('')
   const filteredPlayers = selectedTeam ? players.filter((p) => p.team === selectedTeam) : players
-  const [selectedPlayer, setSelectedPlayer] = useState('')
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
 
 
 
@@ -77,9 +68,6 @@ export function PlayerPage() {
     setIsModalShowing(false)
   }
 
-  const sayHi = () => {
-    console.log('hi')
-  }
 
   return (
     <div>

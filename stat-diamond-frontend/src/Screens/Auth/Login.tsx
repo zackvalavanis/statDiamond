@@ -1,12 +1,7 @@
 import { useState } from 'react'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
-
-
-interface LoginInfo {
-  username: string
-  password: string
-}
+import type { LoginInfo } from '../../types/types'
 
 export function Login() {
   const navigate = useNavigate()
@@ -14,7 +9,6 @@ export function Login() {
     username: "",
     password: ""
   })
-
 
 
   const handlelogin = async (formdata: LoginInfo) => {
