@@ -1,12 +1,13 @@
 import './PlayerPage.css'
 import { PlayerModal } from './PlayerModal'
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 
 interface Player {
   id: number
   name: string
-  batting_avg: GLfloat
+  batting_avg: number
   position: string
   team: string
 }
@@ -47,7 +48,8 @@ export function PlayerPage() {
     { abbr: "WSH", name: "Washington Nationals" },
   ];
   const [selectedTeam, setSelectedTeam] = useState('')
-  const filteredPlayers = selectedTeam ? players.filter((p) => p.team == selectedTeam) : players
+  const filteredPlayers = selectedTeam ? players.filter((p) => p.team === selectedTeam) : players
+  const [selectedPlayer, setSelectedPlayer] = useState('')
 
 
 
@@ -66,7 +68,8 @@ export function PlayerPage() {
   }, [])
 
 
-  const handlePlayerModalShowing = () => {
+  const handlePlayerModalShowing = (player: Player) => {
+    setSelectedPlayer(player)
     setIsModalShowing(true)
   }
 
@@ -74,6 +77,9 @@ export function PlayerPage() {
     setIsModalShowing(false)
   }
 
+  const sayHi = () => {
+    console.log('hi')
+  }
 
   return (
     <div>
@@ -85,18 +91,27 @@ export function PlayerPage() {
           </option>
         ))}
       </select>
-      {filteredPlayers.map((player) => (
-        <div key={player.id}>
-          <h1>{player.name}</h1>
-          <h1>{player.batting_avg}</h1>
-          <h1>{player.position}</h1>
-          <h1>{player.team}</h1>
-        </div>
-      ))}
-      <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} />
-      {!isModalShowing && (
-        <button onClick={handlePlayerModalShowing}>Open Player Modal</button>
-      )}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Position</th>
+            <th>Avg</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredPlayers.map((player) => (
+            <tr className="players-container" key={player.id}>
+              <td><button onClick={() => handlePlayerModalShowing(player)}>{player.name}</button></td>
+              <td>{player.team}</td>
+              <td>{player.position}</td>
+              <td>{player.batting_avg}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
     </div>
   )
 }
