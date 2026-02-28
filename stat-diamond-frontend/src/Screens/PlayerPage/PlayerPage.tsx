@@ -18,7 +18,7 @@ export function PlayerPage() {
     { abbr: "COL", name: "Colorado Rockies" },
     { abbr: "DET", name: "Detroit Tigers" },
     { abbr: "HOU", name: "Houston Astros" },
-    { abbr: "KC", name: "Kansas City Royals" },
+    { abbr: "KCR", name: "Kansas City Royals" },
     { abbr: "LAA", name: "Los Angeles Angels" },
     { abbr: "LAD", name: "Los Angeles Dodgers" },
     { abbr: "MIA", name: "Miami Marlins" },
@@ -29,25 +29,40 @@ export function PlayerPage() {
     { abbr: "OAK", name: "Oakland Athletics" },
     { abbr: "PHI", name: "Philadelphia Phillies" },
     { abbr: "PIT", name: "Pittsburgh Pirates" },
-    { abbr: "SD", name: "San Diego Padres" },
-    { abbr: "SF", name: "San Francisco Giants" },
+    { abbr: "SDP", name: "San Diego Padres" },
+    { abbr: "SFG", name: "San Francisco Giants" },
     { abbr: "SEA", name: "Seattle Mariners" },
     { abbr: "STL", name: "St. Louis Cardinals" },
-    { abbr: "TB", name: "Tampa Bay Rays" },
+    { abbr: "TBR", name: "Tampa Bay Rays" },
     { abbr: "TEX", name: "Texas Rangers" },
     { abbr: "TOR", name: "Toronto Blue Jays" },
-    { abbr: "WSH", name: "Washington Nationals" },
+    { abbr: "WSN", name: "Washington Nationals" },
+    { abbr: "- - -", name: "Free Agents" }
   ];
   const [selectedTeam, setSelectedTeam] = useState('')
-  const filteredPlayers = selectedTeam ? players.filter((p) => p.team === selectedTeam) : players
+  const [selectedSeason, setSelectedSeason] = useState<number | ''>(2025)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
 
+  const filteredPlayers = players.filter((p) => {
+    const matchesTeam = selectedTeam ? p.Team === selectedTeam : true
+    const matchesSeason = selectedSeason ? p.Season === selectedSeason : true
+    return matchesTeam && matchesSeason
+  })
+
+  // useState(() => (
+  //   fetch('http://localhost:8000/api/stats/player/roster?start=2024&end=2024&min_pa=1')
+  //     .then(r => r.json())
+  //     .then(data => {
+  //       console.log('All fields:', data)
+  //     })
+  // ))
 
 
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await fetch('http://localhost:8000/player/dummy/list')
+        const season = selectedSeason || 2024
+        const res = await fetch(`http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`)
         const data = await res.json()
         console.log(data)
         setPlayers(data)
@@ -56,7 +71,7 @@ export function PlayerPage() {
       }
     }
     fetchPlayers()
-  }, [])
+  }, [selectedSeason])
 
 
   const handlePlayerModalShowing = (player: Player) => {
@@ -71,7 +86,7 @@ export function PlayerPage() {
 
   return (
     <div>
-      <select onChange={(e) => setSelectedTeam(e.target.value)}>
+      <select onChange={(e) => setSelectedTeam(e.target.value)} value={selectedTeam}>
         <option value="">Select a team</option>
         {teams.map((team) => (
           <option key={team.abbr} value={team.abbr}>
@@ -79,22 +94,32 @@ export function PlayerPage() {
           </option>
         ))}
       </select>
+
+      <select onChange={(e) => setSelectedSeason(e.target.value ? Number(e.target.value) : '')} value={selectedSeason}>
+        <option value="">All Seasons</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+      </select>
       <table>
         <thead>
           <tr>
             <th>Name</th>
+            <th>Age</th>
             <th>Team</th>
-            <th>Position</th>
             <th>Avg</th>
+            <th>HR</th>
           </tr>
         </thead>
         <tbody>
           {filteredPlayers.map((player) => (
-            <tr className="players-container" key={player.id}>
-              <td><button onClick={() => handlePlayerModalShowing(player)}>{player.name}</button></td>
-              <td>{player.team}</td>
-              <td>{player.position}</td>
-              <td>{player.batting_avg}</td>
+            <tr className="players-container" key={`${player.IDfg}-${player.Season}`}>
+              <td><button onClick={() => handlePlayerModalShowing(player)}>{player.Name}</button></td>
+              <td>{player.Age}</td>
+              <td>{player.Team}</td>
+              <td>{player.AVG?.toFixed(3)}</td>
+              <td>{player.HR}</td>
+
             </tr>
           ))}
         </tbody>

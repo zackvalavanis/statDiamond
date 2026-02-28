@@ -4,13 +4,13 @@ from app.config import CORS_ORIGINS
 from app.database import Base, engine
 from app.routers import auth
 from app.routers import player_router
+from app.routers import stats_router
 
 app = FastAPI(
   title='Baseball Stats API', 
   description='API for baseball statistics and player data', 
   version="1.0.0"
 )
-
 
 app.add_middleware(
   CORSMiddleware,
@@ -24,6 +24,7 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(player_router)
+app.include_router(stats_router, prefix="/api")
 
 @app.get('/')
 def root(): 
