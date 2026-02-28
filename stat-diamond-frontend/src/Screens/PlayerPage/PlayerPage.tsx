@@ -114,11 +114,11 @@ export function PlayerPage() {
       <table>
         <thead>
           <tr>
-            <th onClick={() => setSortKey("Name")}>Name</th>
-            <th onClick={() => setSortKey("Age")}>Age</th>
-            <th onClick={() => setSortKey("Team")}>Team</th>
-            <th onClick={() => setSortKey("AVG")}>Avg</th>
-            <th onClick={() => setSortKey("HR")}>HR</th>
+            <th className='player-headers' onClick={() => setSortKey("Name")}>Name</th>
+            <th className='player-headers' onClick={() => setSortKey("Age")}>Age</th>
+            <th className='player-headers' onClick={() => setSortKey("Team")}>Team</th>
+            <th className='player-headers' onClick={() => setSortKey("AVG")}>Avg</th>
+            <th className='player-headers' onClick={() => setSortKey("HR")}>HR</th>
           </tr>
         </thead>
         <tbody>

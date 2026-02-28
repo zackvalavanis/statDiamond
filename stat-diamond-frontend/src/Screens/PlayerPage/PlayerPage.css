@@ -12,3 +12,11 @@ td {
   text-align: left;
   width: 2%;
 }
+
+.player-headers {
+  cursor: pointer;
+}
+
+.player-headers:hover {
+  background-color: rgb(81, 80, 80);
+}
