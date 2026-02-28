@@ -42,6 +42,8 @@ export function PlayerPage() {
   const [selectedTeam, setSelectedTeam] = useState('')
   const [selectedSeason, setSelectedSeason] = useState<number | ''>(2025)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
+  const [sortKey, setSortKey] = useState<keyof Player>("HR")
+  const [ascending, setAscending] = useState(false)
 
   const filteredPlayers = players.filter((p) => {
     const matchesTeam = selectedTeam ? p.Team === selectedTeam : true
@@ -49,14 +51,22 @@ export function PlayerPage() {
     return matchesTeam && matchesSeason
   })
 
-  // useState(() => (
-  //   fetch('http://localhost:8000/api/stats/player/roster?start=2024&end=2024&min_pa=1')
-  //     .then(r => r.json())
-  //     .then(data => {
-  //       console.log('All fields:', data)
-  //     })
-  // ))
+  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
+    const valA = a[sortKey]
+    const valB = b[sortKey]
 
+    if (typeof valA === "number" && typeof valB === "number") {
+      return ascending ? valA - valB : valB - valA
+    }
+
+    if (typeof valA === "string" && typeof valB === "string") {
+      return ascending
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA)
+    }
+
+    return 0
+  })
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -104,22 +114,21 @@ export function PlayerPage() {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Team</th>
-            <th>Avg</th>
-            <th>HR</th>
+            <th onClick={() => setSortKey("Name")}>Name</th>
+            <th onClick={() => setSortKey("Age")}>Age</th>
+            <th onClick={() => setSortKey("Team")}>Team</th>
+            <th onClick={() => setSortKey("AVG")}>Avg</th>
+            <th onClick={() => setSortKey("HR")}>HR</th>
           </tr>
         </thead>
         <tbody>
-          {filteredPlayers.map((player) => (
+          {sortedPlayers.map((player) => (
             <tr className="players-container" key={`${player.IDfg}-${player.Season}`}>
               <td><button onClick={() => handlePlayerModalShowing(player)}>{player.Name}</button></td>
               <td>{player.Age}</td>
               <td>{player.Team}</td>
               <td>{player.AVG?.toFixed(3)}</td>
               <td>{player.HR}</td>
-
             </tr>
           ))}
         </tbody>
