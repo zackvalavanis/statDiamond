@@ -3,6 +3,18 @@ import { useAuth } from "../../Context/UseAuth"
 
 
 export function Profile() {
+  const [favoritePlayer, setFavoritePlayer] = useState('')
+
+  const handleFavoritePlayers = async () => {
+
+  }
+
+
+
+
+
+
+
   const { user } = useAuth()
   return (
     <div>

@@ -4,17 +4,17 @@ from datetime import datetime
 
 
 ## Schemas for adding favorite player
-class FavoritePlayerCreate(Basemodel): 
+class FavoritePlayerCreate(BaseModel): 
   player_id: str
   player_name: str
 
 #Schema for returning a favorite player
-class FavoritePlayerResponse(Basemodel): 
+class FavoritePlayerResponse(BaseModel): 
   id: UUID
   user_id: UUID 
   player_id: str
   player_name: str
-  datetime: datetime
+  created_at: datetime
   class Config: 
     from_attributes: True
 
@@ -24,11 +24,11 @@ class FavoriteTeamCreate(BaseModel):
   team_name: str
 
 #Scema for returning favorite team
-class FavoriteTeamResponse: 
+class FavoriteTeamResponse(BaseModel): 
   id: UUID 
   user_id: UUID
   team_id: str 
   team_name: str 
-  datetime: datetime
+  created_at: datetime
   class Config: 
     from_attributes: True

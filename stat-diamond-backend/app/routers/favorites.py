@@ -14,9 +14,9 @@ from app.dependencies import get_current_user
 
 router = APIRouter(prefix="/api/favorites", tags=["favorites"])
 
-@router.post("/players", response_model=FavoritePlayerResponse, status_code=status.HTTP_201_Created)
+@router.post("/players", response_model=FavoritePlayerResponse, status_code=status.HTTP_201_CREATED)
 def add_favorite_player(
-  player_date: FavoritePlayerCreate, 
+  player_data: FavoritePlayerCreate, 
   current_user: User = Depends(get_current_user), 
   db: Session = Depends(get_db)
 ):
@@ -24,12 +24,12 @@ def add_favorite_player(
 
   existing = db.query(FavoritePlayer).filter(
     FavoritePlayer.user_id == current_user.id, 
-    Favoriteplayer.player_id == player_data.player_id
+    FavoritePlayer.player_id == player_data.player_id
   ).first()
 
   if existing: 
     raise HTTPException(
-      status_code=status.HTTP_400_BAD_REQUEST
+      status_code=status.HTTP_400_BAD_REQUEST,
       detail="Player already in favorites"
     )
   
@@ -52,7 +52,7 @@ def get_favorite_players(
   current_user: User = Depends(get_current_user),
   db: Session = Depends(get_db)
 ) : 
-""" Retrieves favorite players list """
+  """ Retrieves favorite players list """
   favorites = db.query(FavoritePlayer).filter(
     FavoritePlayer.user_id == current_user.id
   ).all()
