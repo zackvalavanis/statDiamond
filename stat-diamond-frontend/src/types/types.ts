@@ -38,3 +38,18 @@ export interface LoginInfo {
   username: string
   password: string
 }
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  created_at: string
+}
+
+export interface AuthContextType {
+  user: User | null
+  token: string | null
+  login: (token: string) => Promise<void>
+  logout: () => void
+  isLoading: boolean
+}

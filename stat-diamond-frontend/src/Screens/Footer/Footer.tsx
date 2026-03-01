@@ -1,14 +1,17 @@
 import './Footer.css'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../Context/UseAuth'
+import { useNavigate } from 'react-router-dom'
 
 export function Footer() {
   const userLoggedIn = localStorage.getItem('token')
+  const { logout } = useAuth()
+  const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    if (localStorage.getItem('token')) {
-      alert('User Logged Out')
-    }
+  const handleLogout = async () => {
+    logout()
+    alert('User Logged Out')
+    navigate('/login') 
   }
 
   return (

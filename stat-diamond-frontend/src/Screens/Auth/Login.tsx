@@ -2,9 +2,11 @@ import { useState } from 'react'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import type { LoginInfo } from '../../types/types'
+import { useAuth } from '../../Context/UseAuth'
 
 export function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState<LoginInfo>({
     username: "",
     password: ""
@@ -25,7 +27,7 @@ export function Login() {
       });
       const data = await res.json()
       console.log(data)
-      localStorage.setItem('token', data.access_token)
+      await login(data.access_token)
       navigate('/')
     } catch (error) {
       console.log(error)
@@ -54,6 +56,7 @@ export function Login() {
           <label className='label-login-page' htmlFor='password'>Password</label>
           <input
             name='password_digest'
+            type='password'
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           ></input>
