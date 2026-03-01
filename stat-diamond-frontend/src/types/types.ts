@@ -53,3 +53,14 @@ export interface AuthContextType {
   logout: () => void
   isLoading: boolean
 }
+
+
+export interface FavoritePlayer {
+  id: string
+  player_id: string
+  player_name: string
+  user_id: string
+  created_at: string
+}
+
+
