@@ -4,25 +4,30 @@ import { useAuth } from '../../Context/UseAuth'
 import { useNavigate } from 'react-router-dom'
 
 export function Footer() {
-  const userLoggedIn = localStorage.getItem('token')
+  const user = useAuth()
   const { logout } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     logout()
     alert('User Logged Out')
-    navigate('/login') 
+    navigate('/login')
   }
 
   return (
     <div>
       <div className='footer-container'>
         <footer id='footer'>Stat Diamond
-          <Link to='/login'>Login</Link>
-          {userLoggedIn && (
-            <button onClick={handleLogout}>Logout</button>
-          )}
-          <Link to='/create-account'>New Account</Link>
+          {user ?
+            (
+              <button onClick={handleLogout}>Logout</button>
+            ) :
+            (
+              <>
+                <Link to='/login'>Login</Link>
+                <Link to='/create-account'>New Account</Link>
+              </>
+            )}
         </footer>
 
 

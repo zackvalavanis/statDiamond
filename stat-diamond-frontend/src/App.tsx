@@ -6,6 +6,8 @@ import { MainPage } from './Screens/MainPage/MainPage'
 import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
 import { Login } from './Screens/Auth/Login'
 import { CreateUser } from './Screens/Auth/CreateUser'
+import { AuthProvider } from './Context/AuthProvider'
+import { Profile } from './Screens/UserPage/Profile'
 
 function App() {
   const router = createBrowserRouter([
@@ -24,7 +26,8 @@ function App() {
         { path: '/', element: <MainPage /> },
         { path: '/player', element: <PlayerPage /> },
         { path: '/login', element: <Login /> },
-        { path: '/create-account', element: <CreateUser /> }
+        { path: '/create-account', element: <CreateUser /> },
+        { path: '/profile', element: <Profile /> }
       ]
     }
   ])
@@ -32,7 +35,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </>
   )
 }
