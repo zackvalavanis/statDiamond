@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
 from app.database import Base
+from sqlalchemy.orm import relationship
 
 
 # okay user will need user_id, user_name, email, 
@@ -15,3 +16,7 @@ class User(Base):
   hashed_password = Column(String, nullable=False) # we never store plane passwords itll be hashed
   name = Column(String, nullable=False) #Nullable=false means that it is required
   created_at = Column(DateTime, default=datetime.utcnow) #adds a timestamp 
+
+  favorite_players = relationship("FavoritePlayer", back_populates="user")
+  favorite_teams = relationship("FavoriteTeam", back_populates="user")
+
