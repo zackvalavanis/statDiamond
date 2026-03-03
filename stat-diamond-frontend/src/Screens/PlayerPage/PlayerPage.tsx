@@ -3,6 +3,8 @@ import { PlayerModal } from './PlayerModal'
 import { useState, useEffect } from 'react'
 import type { Player } from '../../types/types'
 
+
+
 export function PlayerPage() {
   const [players, setPlayers] = useState<Player[]>([])
   const [isModalShowing, setIsModalShowing] = useState(false)

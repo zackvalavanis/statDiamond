@@ -6,6 +6,9 @@ from app.routers import auth
 from app.routers import player
 from app.routers import stats
 from app.routers import favorites
+from pybaseball import cache
+
+cache.enable()
 
 app = FastAPI(
   title='Baseball Stats API', 
