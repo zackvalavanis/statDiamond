@@ -9,6 +9,8 @@ import { CreateUser } from './Screens/Auth/CreateUser'
 import { AuthProvider } from './Context/AuthProvider'
 import { Profile } from './Screens/UserPage/Profile'
 import { Teams } from './Screens/TeamPages/Teams'
+import { TeamDetails } from './Screens/TeamPages/TeamDetails'
+
 
 function App() {
   const router = createBrowserRouter([
@@ -29,7 +31,8 @@ function App() {
         { path: '/login', element: <Login /> },
         { path: '/create-account', element: <CreateUser /> },
         { path: '/profile', element: <Profile /> },
-        { path: '/teams', element: <Teams /> }
+        { path: `/teams`, element: <Teams /> },
+        { path: `/teams/:teamId`, element: <TeamDetails /> }
       ]
     }
   ])
