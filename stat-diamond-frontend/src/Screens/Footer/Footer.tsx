@@ -4,7 +4,7 @@ import { useAuth } from '../../Context/UseAuth'
 import { useNavigate } from 'react-router-dom'
 
 export function Footer() {
-  const user = useAuth()
+  const { user } = useAuth()
   const { logout } = useAuth()
   const navigate = useNavigate()
 

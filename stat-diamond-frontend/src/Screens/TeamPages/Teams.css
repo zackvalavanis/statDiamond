@@ -2,15 +2,42 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 25%;
+  gap: 60px;
+  padding: 20px;
 }
 
+.division-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 350px;
+}
 
-.division-container p {
+.division-container h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.division {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.division h2 {
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+.division p {
   cursor: pointer;
+  padding: 5px;
+  margin: 2px 0;
 }
 
-.division-container p:hover {
+.division p:hover {
   background-color: rgb(97, 94, 94);
   border-radius: 20px;
 }
