@@ -15,6 +15,7 @@ export function Header() {
           <Link to='/'>Home</Link>
           <Link to='/'>Stats</Link>
           <Link to='/player'>Players</Link>
+          <Link to='/teams'>Teams</Link>
           {user && (<Link to='/profile'>Profile</Link>)}
         </div>
       </header>

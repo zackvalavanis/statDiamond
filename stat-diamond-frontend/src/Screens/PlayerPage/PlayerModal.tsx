@@ -3,7 +3,7 @@ import { useAuth } from '../../Context/UseAuth'
 
 
 export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
 
   const handleFollowPlayer = async () => {
     try {
@@ -40,7 +40,7 @@ export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
       <p>Team: {player.Team}</p>
       <p>Age: {player.Age}</p>
       <p>AVG: {player.AVG}</p>
-      <button onClick={handleFollowPlayer}>Follow Player</button>
+      {user && <button onClick={handleFollowPlayer}>Follow Player</button>}
       <button onClick={onClose}>Close Player Modal</button>
     </div>
   )

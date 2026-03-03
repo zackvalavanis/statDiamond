@@ -3,11 +3,12 @@ import { Header } from './Screens/Header/Header'
 import { Footer } from './Screens/Footer/Footer'
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { MainPage } from './Screens/MainPage/MainPage'
-import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
+import { PlayersPage } from './Screens/PlayerPage/PlayersPage'
 import { Login } from './Screens/Auth/Login'
 import { CreateUser } from './Screens/Auth/CreateUser'
 import { AuthProvider } from './Context/AuthProvider'
 import { Profile } from './Screens/UserPage/Profile'
+import { Teams } from './Screens/TeamPages/Teams'
 
 function App() {
   const router = createBrowserRouter([
@@ -24,10 +25,11 @@ function App() {
       ),
       children: [
         { path: '/', element: <MainPage /> },
-        { path: '/player', element: <PlayerPage /> },
+        { path: '/player', element: <PlayersPage /> },
         { path: '/login', element: <Login /> },
         { path: '/create-account', element: <CreateUser /> },
-        { path: '/profile', element: <Profile /> }
+        { path: '/profile', element: <Profile /> },
+        { path: '/teams', element: <Teams /> }
       ]
     }
   ])

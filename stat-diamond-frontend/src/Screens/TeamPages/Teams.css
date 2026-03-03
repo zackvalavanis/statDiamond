@@ -1,0 +1,16 @@
+.leagues-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 25%;
+}
+
+
+.division-container p {
+  cursor: pointer;
+}
+
+.division-container p:hover {
+  background-color: rgb(97, 94, 94);
+  border-radius: 20px;
+}
