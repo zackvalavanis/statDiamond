@@ -7,6 +7,7 @@ from app.routers import player
 from app.routers import stats
 from app.routers import favorites
 from app.routers import teams
+from app.routers import standings
 from pybaseball import cache
 
 
@@ -33,6 +34,7 @@ app.include_router(player.router)
 app.include_router(stats.router, prefix="/api")
 app.include_router(favorites.router)
 app.include_router(teams.router)
+app.include_router(standings.router)
 
 @app.get('/')
 def root(): 

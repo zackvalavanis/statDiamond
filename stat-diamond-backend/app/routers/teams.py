@@ -33,7 +33,7 @@ def clean_records(df: pd.DataFrame) -> list[dict]:
 router = APIRouter(prefix="/api/teams", tags=["teams"])
 
 @router.get('/{team_id}/roster')
-def get_team_roster(team_id: str, season: int = 2024):  # ← Add colon
+def get_team_roster(team_id: str, season: int = 2025):  # ← Add colon
     """Get all players for a specific team"""
     try:
         df = batting_stats(season, season, qual=1)
