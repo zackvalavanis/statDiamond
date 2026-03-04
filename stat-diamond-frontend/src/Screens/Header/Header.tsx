@@ -12,7 +12,6 @@ export function Header() {
         {/* Header Links below that are main form of navigation */}
         <Link className='stat-diamond' to='/'>Stat Diamond</Link>
         <div className='header-links'>
-          <Link to='/'>Home</Link>
           <Link to='/'>Stats</Link>
           <Link to='/player'>Players</Link>
           <Link to='/teams'>Teams</Link>

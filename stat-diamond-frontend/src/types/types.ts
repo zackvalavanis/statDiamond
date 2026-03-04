@@ -63,4 +63,23 @@ export interface FavoritePlayer {
   created_at: string
 }
 
+export interface Roster {
+  IDfg: number
+  Season: number
+  Name: string
+  Team: string
+  Age: number
+  G?: number          // Games
+  AB?: number         // At Bats
+  H?: number          // Hits
+  AVG?: number        // Batting Average
+  OBP?: number        // On Base Percentage
+  SLG?: number        // Slugging
+  HR?: number         // Home Runs
+  RBI?: number        // RBIs
+  BB?: number         // Walks
+  K?: number          // Strikeouts
+  Pos?: string        // Position (if available)
+}
+
 
