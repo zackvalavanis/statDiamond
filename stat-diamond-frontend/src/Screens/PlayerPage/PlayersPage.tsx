@@ -1,70 +1,107 @@
 import './PlayersPage.css'
 import { PlayerModal } from './PlayerModal'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { Player } from '../../types/types'
 
+const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
+  { key: 'Name', label: 'Name' },
+  { key: 'Age', label: 'Age' },
+  { key: 'Team', label: 'Team' },
+  { key: 'G', label: 'G' },
+  { key: 'AB', label: 'AB' },
+  { key: 'PA', label: 'PA' },
+  { key: 'H', label: 'H' },
+  { key: 'HR', label: 'HR' },
+  { key: 'R', label: 'R' },
+  { key: 'RBI', label: 'RBI' },
+  { key: 'SB', label: 'SB' },
+  { key: 'BB%', label: 'BB%' },
+  { key: 'K%', label: 'K%' },
+  { key: 'AVG', label: 'AVG', format: (v) => v?.toFixed(3) },
+  { key: 'OBP', label: 'OBP', format: (v) => v?.toFixed(3) },
+  { key: 'SLG', label: 'SLG', format: (v) => v?.toFixed(3) },
+  { key: 'OPS', label: 'OPS', format: (v) => v?.toFixed(3) },
+  { key: 'WAR', label: 'WAR', format: (v) => v?.toFixed(1) },
+]
 
+const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Age', 'Team', 'AVG', 'HR']
+
+const teams = [
+  { abbr: 'ARI', name: 'Arizona Diamondbacks' },
+  { abbr: 'ATL', name: 'Atlanta Braves' },
+  { abbr: 'BAL', name: 'Baltimore Orioles' },
+  { abbr: 'BOS', name: 'Boston Red Sox' },
+  { abbr: 'CHC', name: 'Chicago Cubs' },
+  { abbr: 'CHW', name: 'Chicago White Sox' },
+  { abbr: 'CIN', name: 'Cincinnati Reds' },
+  { abbr: 'CLE', name: 'Cleveland Guardians' },
+  { abbr: 'COL', name: 'Colorado Rockies' },
+  { abbr: 'DET', name: 'Detroit Tigers' },
+  { abbr: 'HOU', name: 'Houston Astros' },
+  { abbr: 'KCR', name: 'Kansas City Royals' },
+  { abbr: 'LAA', name: 'Los Angeles Angels' },
+  { abbr: 'LAD', name: 'Los Angeles Dodgers' },
+  { abbr: 'MIA', name: 'Miami Marlins' },
+  { abbr: 'MIL', name: 'Milwaukee Brewers' },
+  { abbr: 'MIN', name: 'Minnesota Twins' },
+  { abbr: 'NYM', name: 'New York Mets' },
+  { abbr: 'NYY', name: 'New York Yankees' },
+  { abbr: 'OAK', name: 'Oakland Athletics' },
+  { abbr: 'PHI', name: 'Philadelphia Phillies' },
+  { abbr: 'PIT', name: 'Pittsburgh Pirates' },
+  { abbr: 'SDP', name: 'San Diego Padres' },
+  { abbr: 'SFG', name: 'San Francisco Giants' },
+  { abbr: 'SEA', name: 'Seattle Mariners' },
+  { abbr: 'STL', name: 'St. Louis Cardinals' },
+  { abbr: 'TBR', name: 'Tampa Bay Rays' },
+  { abbr: 'TEX', name: 'Texas Rangers' },
+  { abbr: 'TOR', name: 'Toronto Blue Jays' },
+  { abbr: 'WSN', name: 'Washington Nationals' },
+  { abbr: '- - -', name: 'Free Agents' },
+]
+
+const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([])
   const [isModalShowing, setIsModalShowing] = useState(false)
-  const teams = [
-    { abbr: "ARI", name: "Arizona Diamondbacks" },
-    { abbr: "ATL", name: "Atlanta Braves" },
-    { abbr: "BAL", name: "Baltimore Orioles" },
-    { abbr: "BOS", name: "Boston Red Sox" },
-    { abbr: "CHC", name: "Chicago Cubs" },
-    { abbr: "CHW", name: "Chicago White Sox" },
-    { abbr: "CIN", name: "Cincinnati Reds" },
-    { abbr: "CLE", name: "Cleveland Guardians" },
-    { abbr: "COL", name: "Colorado Rockies" },
-    { abbr: "DET", name: "Detroit Tigers" },
-    { abbr: "HOU", name: "Houston Astros" },
-    { abbr: "KCR", name: "Kansas City Royals" },
-    { abbr: "LAA", name: "Los Angeles Angels" },
-    { abbr: "LAD", name: "Los Angeles Dodgers" },
-    { abbr: "MIA", name: "Miami Marlins" },
-    { abbr: "MIL", name: "Milwaukee Brewers" },
-    { abbr: "MIN", name: "Minnesota Twins" },
-    { abbr: "NYM", name: "New York Mets" },
-    { abbr: "NYY", name: "New York Yankees" },
-    { abbr: "OAK", name: "Oakland Athletics" },
-    { abbr: "PHI", name: "Philadelphia Phillies" },
-    { abbr: "PIT", name: "Pittsburgh Pirates" },
-    { abbr: "SDP", name: "San Diego Padres" },
-    { abbr: "SFG", name: "San Francisco Giants" },
-    { abbr: "SEA", name: "Seattle Mariners" },
-    { abbr: "STL", name: "St. Louis Cardinals" },
-    { abbr: "TBR", name: "Tampa Bay Rays" },
-    { abbr: "TEX", name: "Texas Rangers" },
-    { abbr: "TOR", name: "Toronto Blue Jays" },
-    { abbr: "WSN", name: "Washington Nationals" },
-    { abbr: "- - -", name: "Free Agents" }
-  ];
   const [selectedTeam, setSelectedTeam] = useState('')
-  const [selectedSeason, setSelectedSeason] = useState<number | ''>(2025)
+  const [selectedSeason, setSelectedSeason] = useState<number>(2025)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
-  const [sortKey, setSortKey] = useState<keyof Player>("HR")
+  const [sortKey, setSortKey] = useState<keyof Player>('HR')
   const [ascending, setAscending] = useState(false)
+  const [visibleColumns, setVisibleColumns] = useState<(keyof Player)[]>(DEFAULT_COLUMNS)
+  const [columnDropdownOpen, setColumnDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setColumnDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const filteredPlayers = players.filter((p) => {
     const matchesTeam = selectedTeam ? p.Team === selectedTeam : true
-    const matchesSeason = selectedSeason ? p.Season === selectedSeason : true
-    return matchesTeam && matchesSeason
+    return matchesTeam
   })
 
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
     const valA = a[sortKey]
     const valB = b[sortKey]
 
-    if (typeof valA === "number" && typeof valB === "number") {
+    if (typeof valA === 'number' && typeof valB === 'number') {
       return ascending ? valA - valB : valB - valA
     }
 
-    if (typeof valA === "string" && typeof valB === "string") {
-      return ascending
-        ? valA.localeCompare(valB)
-        : valB.localeCompare(valA)
+    if (typeof valA === 'string' && typeof valB === 'string') {
+      return ascending ? valA.localeCompare(valB) : valB.localeCompare(valA)
     }
 
     return 0
@@ -74,9 +111,10 @@ export function PlayersPage() {
     const fetchPlayers = async () => {
       try {
         const season = selectedSeason || 2024
-        const res = await fetch(`http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`)
+        const res = await fetch(
+          `http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`
+        )
         const data = await res.json()
-        console.log(data)
         setPlayers(data)
       } catch (error) {
         console.log(error)
@@ -85,6 +123,20 @@ export function PlayersPage() {
     fetchPlayers()
   }, [selectedSeason])
 
+  const handleSort = (key: keyof Player) => {
+    if (sortKey === key) {
+      setAscending(!ascending)
+    } else {
+      setSortKey(key)
+      setAscending(false)
+    }
+  }
+
+  const toggleColumn = (key: keyof Player) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    )
+  }
 
   const handlePlayerModalShowing = (player: Player) => {
     setSelectedPlayer(player)
@@ -95,46 +147,118 @@ export function PlayersPage() {
     setIsModalShowing(false)
   }
 
-
   return (
-    <div>
-      <select onChange={(e) => setSelectedTeam(e.target.value)} value={selectedTeam}>
-        <option value="">Select a team</option>
-        {teams.map((team) => (
-          <option key={team.abbr} value={team.abbr}>
-            {team.name}
-          </option>
-        ))}
-      </select>
+    <div className="players-page">
+      <div className="players-filters">
+        <div className="filter-group">
+          <label htmlFor="team-select">Team</label>
+          <select
+            id="team-select"
+            onChange={(e) => setSelectedTeam(e.target.value)}
+            value={selectedTeam}
+          >
+            <option value="">All Teams</option>
+            {teams.map((team) => (
+              <option key={team.abbr} value={team.abbr}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <select onChange={(e) => setSelectedSeason(e.target.value ? Number(e.target.value) : '')} value={selectedSeason}>
-        <option value="">All Seasons</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-      </select>
-      <table>
-        <thead>
-          <tr>
-            <th className='player-headers' onClick={() => setSortKey("Name")}>Name</th>
-            <th className='player-headers' onClick={() => setSortKey("Age")}>Age</th>
-            <th className='player-headers' onClick={() => setSortKey("Team")}>Team</th>
-            <th className='player-headers' onClick={() => setSortKey("AVG")}>Avg</th>
-            <th className='player-headers' onClick={() => setSortKey("HR")}>HR</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedPlayers.map((player) => (
-            <tr className="players-container" key={`${player.IDfg}-${player.Season}`}>
-              <td><button onClick={() => handlePlayerModalShowing(player)}>{player.Name}</button></td>
-              <td>{player.Age}</td>
-              <td>{player.Team}</td>
-              <td>{player.AVG?.toFixed(3)}</td>
-              <td>{player.HR}</td>
+        <div className="filter-group">
+          <label htmlFor="season-select">Season</label>
+          <select
+            id="season-select"
+            onChange={(e) => setSelectedSeason(Number(e.target.value))}
+            value={selectedSeason}
+          >
+            {seasons.map((yr) => (
+              <option key={yr} value={yr}>
+                {yr}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group column-picker" ref={dropdownRef}>
+          <label>Columns</label>
+          <button
+            className="column-picker-toggle"
+            onClick={() => setColumnDropdownOpen(!columnDropdownOpen)}
+          >
+            {visibleColumns.length} selected
+          </button>
+          {columnDropdownOpen && (
+            <div className="column-picker-dropdown">
+              {ALL_COLUMNS.map((col) => (
+                <label key={col.key} className="column-option">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.includes(col.key)}
+                    onChange={() => toggleColumn(col.key)}
+                  />
+                  {col.label}
+                </label>
+              ))}
+            </div>
+          )}
+          <div>
+            <button
+              onClick={() => setVisibleColumns(DEFAULT_COLUMNS)}
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="players-table-container">
+        <table className="players-table">
+          <thead>
+            <tr>
+              {activeColumns.map((col) => (
+                <th
+                  key={col.key}
+                  className={`player-headers ${sortKey === col.key ? 'sort-active' : ''}`}
+                  onClick={() => handleSort(col.key)}
+                >
+                  {col.label}
+                  {sortKey === col.key && (
+                    <span className="sort-indicator">{ascending ? ' ▲' : ' ▼'}</span>
+                  )}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedPlayers.length > 0 ? (
+              sortedPlayers.map((player) => (
+                <tr
+                  className="players-container"
+                  key={`${player.IDfg}-${player.Season}`}
+                  onClick={() => handlePlayerModalShowing(player)}
+                >
+                  {activeColumns.map((col) => (
+                    <td key={col.key}>
+                      {col.format && typeof player[col.key] === 'number'
+                        ? col.format(player[col.key] as number)
+                        : player[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={activeColumns.length} className="players-empty">
+                  Loading...
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
     </div>
   )

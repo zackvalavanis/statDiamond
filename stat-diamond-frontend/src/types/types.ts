@@ -4,17 +4,24 @@ export interface Player {
   Name: string
   Team: string
   Age: number
-  G?: number          // Games
-  AB?: number         // At Bats
-  H?: number          // Hits
-  AVG?: number        // Batting Average
-  OBP?: number        // On Base Percentage
-  SLG?: number        // Slugging
-  HR?: number         // Home Runs
-  RBI?: number        // RBIs
-  BB?: number         // Walks
-  K?: number          // Strikeouts
-  Pos?: string        // Position (if available)
+  G?: number
+  AB?: number
+  PA?: number
+  H?: number
+  R?: number
+  HR?: number
+  RBI?: number
+  SB?: number
+  BB?: number
+  K?: number
+  'BB%'?: number
+  'K%'?: number
+  AVG?: number
+  OBP?: number
+  SLG?: number
+  OPS?: number
+  WAR?: number
+  Pos?: string
 }
 
 export interface PlayerModalProps {

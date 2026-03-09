@@ -22,9 +22,6 @@ header {
   /* spacing between links */
 }
 
-
-
-
 .header-links a {
   font-size: 20px;
   color: white;
@@ -35,12 +32,12 @@ header {
 }
 
 .header-links a:hover {
-  color: burlywood;
-  background-color: rgb(58, 58, 58);
+  color: #c9a84c;
+  background-color: rgb(40, 40, 40);
   border-radius: 20px;
 
 }
 
 .stat-diamond:hover {
-  color: burlywood
+  color: #c9a84c;
 }

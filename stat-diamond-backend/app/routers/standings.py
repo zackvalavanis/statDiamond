@@ -7,6 +7,15 @@ from pybaseball import cache
 
 cache.enable()
 
+DIVISION_LABELS = [
+    {"league": "American League", "division": "AL East"},
+    {"league": "American League", "division": "AL Central"},
+    {"league": "American League", "division": "AL West"},
+    {"league": "National League", "division": "NL East"},
+    {"league": "National League", "division": "NL Central"},
+    {"league": "National League", "division": "NL West"},
+]
+
 
 def sanitize_value(val):
     """Convert any non-JSON-serializable value to None."""
@@ -37,15 +46,23 @@ def clean_records(df: pd.DataFrame) -> list[dict]:
 router = APIRouter(prefix="/api", tags=["standings"])
 
 @router.get('/standings')
-def get_standings(season: int): 
-    """Fetch raw standings data for a date range."""
+def get_standings(season: int):
+    """Fetch standings data grouped by division."""
     try:
-       tables = standings(season)
+        tables = standings(season)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch standings: {e}")
 
     if not tables:
         return []
-    all_standings = pd.concat(tables, ignore_index=True)  
-    return clean_records(all_standings)
 
+    all_rows = []
+    for i, table in enumerate(tables):
+        label = DIVISION_LABELS[i] if i < len(DIVISION_LABELS) else {"league": "Unknown", "division": "Unknown"}
+        table = table.copy()
+        table["league"] = label["league"]
+        table["division"] = label["division"]
+        all_rows.append(table)
+
+    all_standings = pd.concat(all_rows, ignore_index=True)
+    return clean_records(all_standings)
