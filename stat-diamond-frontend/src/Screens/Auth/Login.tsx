@@ -3,6 +3,7 @@ import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import type { LoginInfo } from '../../types/types'
 import { useAuth } from '../../Context/UseAuth'
+import toast from 'react-hot-toast'
 
 export function Login() {
   const navigate = useNavigate()
@@ -28,6 +29,7 @@ export function Login() {
       const data = await res.json()
       console.log(data)
       await login(data.access_token)
+      toast.success("User Logged in.")
       navigate('/')
     } catch (error) {
       console.log(error)

@@ -10,14 +10,15 @@ import { AuthProvider } from './Context/AuthProvider'
 import { Profile } from './Screens/UserPage/Profile'
 import { Teams } from './Screens/TeamPages/Teams'
 import { TeamDetails } from './Screens/TeamPages/TeamDetails'
+import { Toaster } from 'react-hot-toast'
 
 
 function App() {
   const router = createBrowserRouter([
-
     {
       element: (
         <div className="app-layout">
+          <Toaster /* ... */ />
           <Header />
           <main className='content'>
             <Outlet />

@@ -2,35 +2,34 @@ import './Footer.css'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../Context/UseAuth'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 export function Footer() {
-  const { user } = useAuth()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     logout()
-    alert('User Logged Out')
+    toast.success('User Logged Out')
     navigate('/login')
   }
 
   return (
     <div>
       <div className='footer-container'>
-        <footer id='footer'>Stat Diamond
-          {user ?
-            (
+        <footer className="footer">
+          <span className="footer-branding">Stat Diamond — Powered by React & FastAPI</span>
+          <div className="footer-links">
+            {user ? (
               <button onClick={handleLogout}>Logout</button>
-            ) :
-            (
+            ) : (
               <>
-                <Link to='/login'>Login</Link>
-                <Link to='/create-account'>New Account</Link>
+                <Link to="/login">Login</Link>
+                <Link to="/create-account">New Account</Link>
               </>
             )}
+          </div>
         </footer>
-
-
       </div>
 
     </div>
