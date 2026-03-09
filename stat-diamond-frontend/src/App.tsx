@@ -11,6 +11,7 @@ import { Profile } from './Screens/UserPage/Profile'
 import { Teams } from './Screens/TeamPages/Teams'
 import { TeamDetails } from './Screens/TeamPages/TeamDetails'
 import { Toaster } from 'react-hot-toast'
+import { AdvancedStatsPage } from './Screens/AdvancedStats/AdvancedStatsPage'
 
 
 function App() {
@@ -33,7 +34,8 @@ function App() {
         { path: '/create-account', element: <CreateUser /> },
         { path: '/profile', element: <Profile /> },
         { path: `/teams`, element: <Teams /> },
-        { path: `/teams/:teamId`, element: <TeamDetails /> }
+        { path: `/teams/:teamId`, element: <TeamDetails /> },
+        { path: '/advanced-stats', element: <AdvancedStatsPage /> }
       ]
     }
   ])

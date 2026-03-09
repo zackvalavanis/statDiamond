@@ -28,6 +28,7 @@ export function Footer() {
                 <Link to="/create-account">New Account</Link>
               </>
             )}
+            <Link to='advanced-stats'>Advanced Stats</Link>
           </div>
         </footer>
       </div>
