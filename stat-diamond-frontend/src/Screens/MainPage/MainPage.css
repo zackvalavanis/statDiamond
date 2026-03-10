@@ -1,3 +1,7 @@
+.main-page-container {
+  min-height: 80rem;
+}
+
 .logo-container {
   display: flex;
   justify-content: center;
@@ -5,7 +9,45 @@
 }
 
 .logo {
-  height: 800px;
+  height: 200px;
   width: auto;
   cursor: pointer;
+}
+
+.leader-boxes-container {
+  display: grid;
+  grid-template-columns: 600px 600px;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.leader-boxes-container h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #c9a84c;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(201, 168, 76, 0.25);
+}
+
+.leader-box-left,
+.leader-box-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 8px;
+  height: 400px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.2s ease;
+}
+
+.leader-box-left:hover,
+.leader-box-right:hover {
+  border-color: rgba(201, 168, 76, 0.6);
 }
