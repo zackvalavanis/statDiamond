@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Query, HTTPException
-from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stats
+from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stats, pitching_stats
 import numpy as np
 import pandas as pd
 import math
+
 
 
 router = APIRouter(prefix="/stats", tags=["stats"])
@@ -71,21 +72,21 @@ def lookup_player(
     return clean_records(result)
 
 
-@router.get("/player/pitching")
+
+
+@router.get('/player/pitching')
 def get_pitching_stats(
-    player_id: int = Query(..., description="MLB player ID (key_mlbam)"),
-    start: str = Query(..., description="Start date (YYYY-MM-DD)"),
-    end: str = Query(..., description="End date (YYYY-MM-DD)"),
+    start: int = Query(..., description="Start season (e.g. 2024)"),
+    end: int = Query(..., description="End season (e.g. 2025)"),
+    min_ip: int = Query(1, description="Minimum innings pitched qualifier")
 ):
-    """Fetch Statcast pitching data for a specific player."""
+    """Fetch aggregate pitching statistics using Fangraphs"""
     try:
-        df = statcast_pitcher(start_dt=start, end_dt=end, player_id=player_id)
+        df = pitching_stats(start, end, qual=min_ip)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch pitching data: {e}")
-
     if df is None or df.empty:
         return []
-
     return clean_records(df)
 
 @router.get('/player/batting')

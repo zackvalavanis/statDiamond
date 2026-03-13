@@ -20,7 +20,6 @@ export function TeamDetails() {
         console.log(error)
       }
     }
-
     handleGetTeam(teamId)
   }, [teamId])
 

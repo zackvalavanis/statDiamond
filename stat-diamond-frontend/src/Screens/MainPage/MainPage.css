@@ -1,5 +1,20 @@
 .main-page-container {
   min-height: 80rem;
+  position: relative;
+}
+
+.main-page-container::before {
+  content: '';
+  position: fixed;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: url('../../assets/StatDiamondLogo.png') center / contain no-repeat;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .logo-container {
@@ -8,11 +23,11 @@
   align-items: flex-start;
 }
 
-.logo {
-  height: 200px;
+/* .logo {
+  height: 1000px;
   width: auto;
   cursor: pointer;
-}
+} */
 
 .leader-boxes-container {
   display: grid;

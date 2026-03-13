@@ -22,6 +22,8 @@ export interface Player {
   OPS?: number
   WAR?: number
   Pos?: string
+  ERA?: string
+  SO?: string
 }
 
 export interface PlayerModalProps {
