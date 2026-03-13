@@ -13,6 +13,20 @@ body,
   flex-direction: column;
 }
 
+.app-layout::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: url('./assets/StatDiamondLogo.png') center / contain no-repeat;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .content {
   flex: 1
 }

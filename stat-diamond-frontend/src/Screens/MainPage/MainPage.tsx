@@ -1,6 +1,4 @@
 import './MainPage.css'
-import logo from '../../assets/StatDiamondLogo.png'
-// import { ModalHome } from './Modal-home'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import type { Player } from '../../types/types'
@@ -11,6 +9,8 @@ export function MainPage() {
   const [topHomeRun, setTopHomeRun] = useState<Player[]>([])
   const [topSo, setSo] = useState<Player[]>([])
   const [topERA, setTopERA] = useState<Player[]>([])
+  const now = new Date()
+  const current_year = now.getFullYear()
 
 
 
@@ -24,14 +24,14 @@ export function MainPage() {
         const data2 = await res2.json()
         console.log(data)
         console.log("Data 2", data2)
-        const top_batting_averages = (data.sort((a, b) => b.batting_average - a.batting_average).slice(0, 10))
+        const top_batting_averages = (data.sort((a: { batting_average: number }, b: { batting_average: number }) => b.batting_average - a.batting_average).slice(0, 10))
         setTopBattingAvg(top_batting_averages)
-        const topHomeRun = (data.sort((a, b) => b.HR - a.HR).slice(0, 10))
+        const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
         setTopHomeRun(topHomeRun)
 
-        const topSo = (data2.sort((a, b) => b.strikeouts - a.strikeouts).slice(0, 10))
+        const topSo = (data2.sort((a: { strikeouts: number }, b: { strikeouts: number }) => b.strikeouts - a.strikeouts).slice(0, 10))
         setSo(topSo)
-        const topERA = data2.sort((a, b) => a.ERA - b.ERA).slice(0, 10)
+        const topERA = data2.sort((a: { ERA: number }, b: { ERA: number }) => a.ERA - b.ERA).slice(0, 10)
         setTopERA(topERA)
       } catch (error) {
         console.error("There was an error", error)
@@ -41,13 +41,9 @@ export function MainPage() {
   }, [])
 
 
-
-
   return (
     <div className='main-page-container'>
-      {/* <div className='logo-container'>
-        <img className='logo' src={logo} />
-      </div> */}
+      <h1 className='main-header'>League Leaders {current_year}</h1>
       <div className='leader-boxes-container'>
         <div className='leader-box-left'>
           <div className='batting_average'>
@@ -143,8 +139,15 @@ export function MainPage() {
                 ))}
               </tbody>
             </table>
-
           </div>
+        </div>
+
+        {/* Awards Section */}
+        <div>
+
+
+
+
         </div>
 
       </div>
