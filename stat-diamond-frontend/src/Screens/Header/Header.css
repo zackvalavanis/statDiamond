@@ -4,6 +4,8 @@ header {
   display: flex;
   padding: 0 40px;
   box-sizing: border-box;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.11em;
   gap: 60px;
   /* space between Stat Diamond and links */
 }
