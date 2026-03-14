@@ -15,12 +15,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(166, 164, 164, 0.066);
+  background-color: rgba(83, 83, 83, 0.339);
   width: 20%;
   margin: 0 auto;
   border-radius: 20px;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.079);
   height: 400px;
 }
 
@@ -30,11 +30,12 @@
   justify-content: center;
   gap: 15px;
   width: 80%;
+  border: none;
 }
 
 .form input {
   border-radius: 2px;
-  height: 20px;
+  height: 40px;
 }
 
 .form button {

@@ -5,6 +5,7 @@ import type { LoginInfo } from '../../types/types'
 import { useAuth } from '../../Context/UseAuth'
 import toast from 'react-hot-toast'
 
+
 export function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
