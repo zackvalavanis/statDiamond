@@ -63,8 +63,12 @@ const teams = [
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [playersPerPage] = useState<number>(25)
+  const indexOfLastPlayer = currentPage * playersPerPage
+  const indexOfFirstPlayer = indexOfLastPlayer - playersPerPage
   const [players, setPlayers] = useState<Player[]>([])
-  const [isModalShowing, setIsModalShowing] = useState(false)
+  const [isModalShowing, setIsModalShowing] = useState<boolean>(false)
   const [selectedTeam, setSelectedTeam] = useState('')
   const [selectedSeason, setSelectedSeason] = useState<number>(2025)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
@@ -146,6 +150,27 @@ export function PlayersPage() {
   const handlePlayerModalClose = () => {
     setIsModalShowing(false)
   }
+
+
+  const currentPlayers = sortedPlayers.slice(indexOfFirstPlayer, indexOfLastPlayer)
+  const totalPages = Math.ceil(sortedPlayers.length / playersPerPage)
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1)  // ← Reset to first page
+  }, [selectedTeam, selectedSeason])
 
   return (
     <div className="players-page">
@@ -232,8 +257,8 @@ export function PlayersPage() {
             </tr>
           </thead>
           <tbody>
-            {sortedPlayers.length > 0 ? (
-              sortedPlayers.map((player) => (
+            {currentPlayers.length > 0 ? (
+              currentPlayers.map((player) => (
                 <tr
                   className="players-container"
                   key={`${player.IDfg}-${player.Season}`}
@@ -260,6 +285,19 @@ export function PlayersPage() {
       </div>
 
       <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
+      <div style={{ display: "flex", alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '40px' }} className="pagination-controls">
+        <button onClick={prevPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+
+        <span>
+          Page {currentPage} of {totalPages} ({sortedPlayers.length} players)
+        </span>
+
+        <button onClick={nextPage} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
     </div>
   )
 }
