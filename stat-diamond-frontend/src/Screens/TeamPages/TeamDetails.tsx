@@ -14,7 +14,7 @@ export function TeamDetails() {
       try {
         const res = await fetch(`http://localhost:8000/api/teams/${teamId}/roster`)
         const data = await res.json()
-        console.log(data)
+        console.log("Positions", data.map(p => ({ name: p.Name, position: p.Position })))
         setRoster(data)
       } catch (error) {
         console.log(error)

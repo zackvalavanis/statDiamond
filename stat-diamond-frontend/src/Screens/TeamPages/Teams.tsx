@@ -86,17 +86,19 @@ export function Teams() {
                         const bGB = b.GB === '--' ? 0 : parseFloat(b.GB ?? '999')
                         return aGB - bGB
                       })
-                      .map((team) => (
-                        <tr key={team.Tm}>
-                          <td>
-                            <Link to={`/teams/${team.Tm}`}>{team.Tm}</Link>
-                          </td>
-                          <td>{team.W}</td>
-                          <td>{team.L}</td>
-                          <td>{team['W-L%']}</td>
-                          <td>{team.GB}</td>
-                        </tr>
-                      ))}
+                      .map((team) => {
+                        return (
+                          < tr key={team.Tm} >
+                            <td>
+                              <Link to={`/teams/${team.Tm}`}>{team.Tm}</Link>
+                            </td>
+                            <td>{team.W}</td>
+                            <td>{team.L}</td>
+                            <td>{team['W-L%']}</td>
+                            <td>{team.GB}</td>
+                          </tr>
+                        )
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -104,6 +106,6 @@ export function Teams() {
           </div>
         ))}
       </div>
-    </div>
+    </div >
   )
 }
