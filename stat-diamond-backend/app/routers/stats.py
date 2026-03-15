@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query, HTTPException
-from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stats, pitching_stats
+from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stats, pitching_stats, batting_stats_bref
 import numpy as np
 import pandas as pd
 import math

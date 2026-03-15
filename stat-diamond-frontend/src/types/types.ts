@@ -25,6 +25,7 @@ export interface Player {
   ERA?: string
   SO?: string
   Position?: string | null
+  Dol?: string | null
 }
 
 export interface PlayerModalProps {

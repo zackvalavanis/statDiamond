@@ -1,0 +1,20 @@
+.modal-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 20px;
+  background-color: black;
+  position: fixed;
+  top: calc(50% - 200px);
+  left: calc(50% - 250px);
+  width: 500px;
+  height: 400px;
+  z-index: 99999;
+}
+
+.modal-container button {
+  width: 50%;
+  margin: 0 auto;
+
+}

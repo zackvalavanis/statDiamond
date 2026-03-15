@@ -12,6 +12,7 @@ import { Teams } from './Screens/TeamPages/Teams'
 import { TeamDetails } from './Screens/TeamPages/TeamDetails'
 import { Toaster } from 'react-hot-toast'
 import { AdvancedStatsPage } from './Screens/AdvancedStats/AdvancedStatsPage'
+import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
       children: [
         { path: '/', element: <MainPage /> },
         { path: '/player', element: <PlayersPage /> },
+        { path: '/player/:playerId', element: <PlayerPage /> },
         { path: '/login', element: <Login /> },
         { path: '/create-account', element: <CreateUser /> },
         { path: '/profile', element: <Profile /> },

@@ -5,8 +5,9 @@ import type { Player } from '../../types/types'
 
 const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
   { key: 'Name', label: 'Name' },
-  { key: 'Position', label: 'POS', format: (v) => v?.toFixed(1) },
+  { key: 'Position', label: 'POS' },
   { key: 'Age', label: 'Age' },
+  { key: 'Dol', label: 'Salary', format: (v) => `$${Number(v).toLocaleString()}` },
   { key: 'Team', label: 'Team' },
   { key: 'G', label: 'G' },
   { key: 'AB', label: 'AB' },
@@ -25,7 +26,7 @@ const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) =>
   { key: 'WAR', label: 'WAR', format: (v) => v?.toFixed(1) },
 ]
 
-const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Position', 'Age', 'Team', 'AVG', 'HR']
+const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Position', 'Dol', 'Age', 'Team', 'AVG', 'HR']
 
 const teams = [
   { abbr: 'ARI', name: 'Arizona Diamondbacks' },
@@ -58,7 +59,7 @@ const teams = [
   { abbr: 'TEX', name: 'Texas Rangers' },
   { abbr: 'TOR', name: 'Toronto Blue Jays' },
   { abbr: 'WSN', name: 'Washington Nationals' },
-  { abbr: '- - -', name: 'Free Agents' },
+  { abbr: '- - -', name: 'Free Agent' },
 ]
 
 const positions = [
@@ -71,7 +72,7 @@ const positions = [
   { abbr: 'CF', name: 'Center Field' },
   { abbr: 'RF', name: 'Right Field' },
   { abbr: 'DH', name: 'Designated Hitter' },
-  { abbr: 'TWP', name: 'Two Way Player' }
+  { abbr: 'TWP', name: 'Two Way Player' },
 ]
 
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
@@ -92,6 +93,8 @@ export function PlayersPage() {
   const [visibleColumns, setVisibleColumns] = useState<(keyof Player)[]>(DEFAULT_COLUMNS)
   const [columnDropdownOpen, setColumnDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
 
@@ -109,13 +112,18 @@ export function PlayersPage() {
   const filteredPlayers = players.filter((p) => {
     const matchesTeam = selectedTeam ? p.Team === selectedTeam : true
     const matchesPosition = selectedPosition ? p.Position === selectedPosition : true
-    return matchesTeam && matchesPosition
+    const matchesSearch = searchQuery ? p.Name.toLowerCase().includes(searchQuery.toLowerCase()) : true
+    return matchesTeam && matchesPosition && matchesSearch
   })
 
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
-    const valA = a[sortKey]
-    const valB = b[sortKey]
+    let valA = a[sortKey]
+    let valB = b[sortKey]
 
+    if (sortKey == 'Dol') {
+      valA = Number(String(valA).replace(/[$,]/g, '')) || 0
+      valB = Number(String(valB).replace(/[$,]/g, '')) || 0
+    }
     if (typeof valA === 'number' && typeof valB === 'number') {
       return ascending ? valA - valB : valB - valA
     }
@@ -135,6 +143,7 @@ export function PlayersPage() {
           `http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`
         )
         const data = await res.json()
+        console.log(data)
         setPlayers(data)
       } catch (error) {
         console.log(error)
@@ -217,8 +226,14 @@ export function PlayersPage() {
               </option>
             ))}
           </select>
+          <input
+            className='search-players'
+            type='text'
+            placeholder='Search Players...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-
         <div className="filter-group">
           <label htmlFor="season-select">Season</label>
           <select
@@ -311,21 +326,27 @@ export function PlayersPage() {
           </tbody>
         </table>
       </div>
-
-      <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
+      {/* Pagination - always visible */}
       <div style={{ display: "flex", alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '40px' }} className="pagination-controls">
         <button onClick={prevPage} disabled={currentPage === 1}>
           Previous
         </button>
-
         <span>
           Page {currentPage} of {totalPages} ({sortedPlayers.length} players)
         </span>
-
         <button onClick={nextPage} disabled={currentPage === totalPages}>
           Next
         </button>
       </div>
+
+      {/* Modal overlay - only when open */}
+      {isModalShowing && (
+        <div className='modal-overlay' onClick={handlePlayerModalClose}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

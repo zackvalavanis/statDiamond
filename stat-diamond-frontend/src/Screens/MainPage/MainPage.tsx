@@ -2,6 +2,7 @@ import './MainPage.css'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import type { Player } from '../../types/types'
+import { useNavigate } from 'react-router-dom'
 
 
 export function MainPage() {
@@ -11,6 +12,7 @@ export function MainPage() {
   const [topERA, setTopERA] = useState<Player[]>([])
   const now = new Date()
   const current_year = now.getFullYear()
+  const navigate = useNavigate()
 
 
 
@@ -22,8 +24,6 @@ export function MainPage() {
         const res2 = await fetch(`http://localhost:8000/api/stats/player/pitching?start=${season}&end=${season}&min_ip=20`)
         const data = await res.json()
         const data2 = await res2.json()
-        console.log(data)
-        console.log("Data 2", data2)
         const top_batting_averages = (data.sort((a: { batting_average: number }, b: { batting_average: number }) => b.batting_average - a.batting_average).slice(0, 10))
         setTopBattingAvg(top_batting_averages)
         const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
@@ -38,6 +38,11 @@ export function MainPage() {
     }
     handleFetchTopAverages()
   }, [])
+
+
+  const navigateToPlayer = (player: Player) => {
+    navigate(`/player/${player.IDfg}`, { state: { player } })
+  }
 
 
   return (
@@ -57,7 +62,7 @@ export function MainPage() {
               </thead>
               <tbody>
                 {topBattingAvg.map((leaders, index) => (
-                  <tr key={leaders.IDfg}>
+                  <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.AVG}</td>
@@ -80,7 +85,7 @@ export function MainPage() {
               </thead>
               <tbody>
                 {topHomeRun.map((leaders, index) => (
-                  <tr key={leaders.IDfg}>
+                  <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.HR}</td>
@@ -105,7 +110,7 @@ export function MainPage() {
               </thead>
               <tbody>
                 {topERA.map((leaders, index) => (
-                  <tr key={leaders.IDfg}>
+                  <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.ERA}</td>
@@ -130,7 +135,7 @@ export function MainPage() {
               </thead>
               <tbody>
                 {topSo.map((leaders, index) => (
-                  <tr key={leaders.IDfg}>
+                  <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.SO}</td>

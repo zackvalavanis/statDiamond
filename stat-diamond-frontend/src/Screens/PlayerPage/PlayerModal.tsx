@@ -1,5 +1,6 @@
 import type { PlayerModalProps } from '../../types/types'
 import { useAuth } from '../../Context/UseAuth'
+import './PlayerModal.css'
 
 
 export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
@@ -35,13 +36,13 @@ export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
   }
 
   return (
-    <div>
+    <div className='modal-container'>
       <h2>{player.Name}</h2>
       <p>Team: {player.Team}</p>
       <p>Age: {player.Age}</p>
       <p>AVG: {player.AVG}</p>
       {user && <button onClick={handleFollowPlayer}>Follow Player</button>}
-      <button onClick={onClose}>Close Player Modal</button>
+      <button onClick={onClose}>Close</button>
     </div>
   )
 }
