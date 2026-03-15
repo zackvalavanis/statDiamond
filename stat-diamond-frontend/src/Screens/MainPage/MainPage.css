@@ -1,20 +1,25 @@
 .main-page-container {
   min-height: 80rem;
   position: relative;
+  padding: 2rem 1rem;
 }
 
 .main-header {
   color: #c9a84c;
   font-family: 'Bebas Neue', sans-serif;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
+  text-align: center;
+  font-size: 2.4rem;
+  margin-bottom: 2rem;
 }
 
 .leader-boxes-container {
   display: grid;
-  grid-template-columns: 600px 600px;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem 0;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 1.5rem;
+  padding: 0 1rem;
 }
 
 .leader-boxes-container h1 {
@@ -36,7 +41,7 @@
   align-items: stretch;
   border: 1px solid rgba(201, 168, 76, 0.3);
   border-radius: 8px;
-  height: auto;
+  min-height: 420px;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.03);
   transition: border-color 0.2s ease;
@@ -52,29 +57,44 @@
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
   table-layout: fixed;
+  flex: 1;
 }
 
 /* ── Column Widths ── */
-.table td:first-child {
+.table td:first-child,
+.table th:first-child {
   width: 10%;
   text-align: center;
   padding-left: 0.5rem;
 }
 
-.table td:nth-child(2) {
+.table td:nth-child(2),
+.table th:nth-child(2) {
   width: 60%;
   text-align: left;
 }
 
-.table td:nth-child(3) {
+.table td:nth-child(3),
+.table th:nth-child(3) {
   width: 30%;
   text-align: right;
   padding-right: 0.5rem;
 }
 
+/* ── Table Header ── */
+.table th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
 /* ── Table Cells ── */
 .table td {
-  padding: 0.35rem 0.4rem;
+  padding: 0.45rem 0.4rem;
   text-align: center;
   font-size: 0.85rem;
   font-weight: 400;
@@ -120,25 +140,14 @@
   color: #c9a84c;
 }
 
-.table th {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #c9a84c;
-  padding: 0.5rem 0.4rem;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
-}
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .leader-boxes-container {
+    grid-template-columns: 1fr;
+  }
 
-.table th:first-child {
-  text-align: center;
-}
-
-.table th:nth-child(2) {
-  text-align: left;
-}
-
-.table th:nth-child(3) {
-  text-align: right;
-  padding-right: 0.5rem;
+  .leader-box-left,
+  .leader-box-right {
+    min-height: auto;
+  }
 }

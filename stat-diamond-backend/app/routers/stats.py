@@ -3,10 +3,36 @@ from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stat
 import numpy as np
 import pandas as pd
 import math
+import unicodedata
+import requests
+from app.routers.teams import MLB_TEAM_IDS
 
+
+from functools import lru_cache
+
+@lru_cache(maxsize=10)
+def get_all_positions(season: int) -> dict:
+    positions = {}
+    for team_name, mlb_id in MLB_TEAM_IDS.items():
+        url = f"https://statsapi.mlb.com/api/v1/teams/{mlb_id}/roster?season={season}"
+        res = requests.get(url)
+        roster_data = res.json().get("roster", [])
+        for p in roster_data:
+            positions[normalize_name(p["person"]["fullName"])] = p["position"]["abbreviation"]
+    return positions
 
 
 router = APIRouter(prefix="/stats", tags=["stats"])
+
+def normalize_name(name: str) -> str:
+    # Remove accents
+    name = unicodedata.normalize('NFD', name)
+    name = ''.join(c for c in name if unicodedata.category(c) != 'Mn')
+    # Lowercase and strip suffixes
+    name = name.lower().strip()
+    for suffix in [' jr.', ' jr', ' sr.', ' sr', ' ii', ' iii', ' iv']:
+        name = name.replace(suffix, '')
+    return name.strip()
 
 
 def sanitize_value(val):
@@ -80,22 +106,24 @@ def get_pitching_stats(
     end: int = Query(..., description="End season (e.g. 2025)"),
     min_ip: int = Query(1, description="Minimum innings pitched qualifier")
 ):
-    """Fetch aggregate pitching statistics using Fangraphs"""
     try:
         df = pitching_stats(start, end, qual=min_ip)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch pitching data: {e}")
     if df is None or df.empty:
         return []
+
+    positions = get_all_positions(start)
+    df = df.copy()
+    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     return clean_records(df)
 
 @router.get('/player/batting')
 def get_batting_stats(
     start: int = Query(..., description="Start season (e.g. 2024)"), 
     end: int = Query(..., description="End season (e.g. 2025)"), 
-    min_pa: int = Query(1, description="Minimum plate appearances (default: 1 for all players)")  # Add this
-    ): 
-    """Fetch Aggregate statistics using Fangraphs"""
+    min_pa: int = Query(1, description="Minimum plate appearances")
+): 
     try: 
         df = batting_stats(start, end, qual=min_pa)
     except Exception as e: 
@@ -103,30 +131,29 @@ def get_batting_stats(
     if df is None or df.empty: 
         return []
     
+    positions = get_all_positions(start)
+    df = df.copy()
+    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     return clean_records(df)
 
-from pybaseball import batting_stats_bref  # Add this import at the top
 
 @router.get('/player/roster')
 def get_roster(
     start: int = Query(..., description="Start season (e.g. 2024)"), 
-    end: int = Query(None, description="End season (optional, defaults to start)"),  # BRef only does one season
+    end: int = Query(None, description="End season (optional, defaults to start)"),
     min_pa: int = Query(1, description="Minimum plate appearances")
 ): 
-    """Fetch batting statistics using Baseball Reference"""
     try:
-        # Baseball Reference can only do one season at a time
         season = start
         df = batting_stats_bref(season)
-        
-        # Filter by minimum PA if needed
         if min_pa > 1:
             df = df[df['PA'] >= min_pa]
-            
     except Exception as e: 
         raise HTTPException(status_code=502, detail=f"Failed to fetch batting data: {e}")
-    
     if df is None or df.empty: 
         return []
     
+    positions = get_all_positions(start)
+    df = df.copy()
+    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     return clean_records(df)

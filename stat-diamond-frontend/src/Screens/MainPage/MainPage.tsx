@@ -28,7 +28,6 @@ export function MainPage() {
         setTopBattingAvg(top_batting_averages)
         const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
         setTopHomeRun(topHomeRun)
-
         const topSo = (data2.sort((a: { strikeouts: number }, b: { strikeouts: number }) => b.strikeouts - a.strikeouts).slice(0, 10))
         setSo(topSo)
         const topERA = data2.sort((a: { ERA: number }, b: { ERA: number }) => a.ERA - b.ERA).slice(0, 10)
@@ -60,7 +59,7 @@ export function MainPage() {
                 {topBattingAvg.map((leaders, index) => (
                   <tr key={leaders.IDfg}>
                     <td>{index + 1}</td>
-                    <td>{leaders.Name}</td>
+                    <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.AVG}</td>
                   </tr>
                 ))}
@@ -83,7 +82,7 @@ export function MainPage() {
                 {topHomeRun.map((leaders, index) => (
                   <tr key={leaders.IDfg}>
                     <td>{index + 1}</td>
-                    <td>{leaders.Name}</td>
+                    <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.HR}</td>
                   </tr>
                 ))}
@@ -108,7 +107,7 @@ export function MainPage() {
                 {topERA.map((leaders, index) => (
                   <tr key={leaders.IDfg}>
                     <td>{index + 1}</td>
-                    <td>{leaders.Name}</td>
+                    <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.ERA}</td>
                   </tr>
                 ))}
@@ -133,7 +132,7 @@ export function MainPage() {
                 {topSo.map((leaders, index) => (
                   <tr key={leaders.IDfg}>
                     <td>{index + 1}</td>
-                    <td>{leaders.Name}</td>
+                    <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
                     <td>{leaders.SO}</td>
                   </tr>
                 ))}

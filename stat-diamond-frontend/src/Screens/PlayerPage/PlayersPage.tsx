@@ -5,6 +5,7 @@ import type { Player } from '../../types/types'
 
 const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
   { key: 'Name', label: 'Name' },
+  { key: 'Position', label: 'POS', format: (v) => v?.toFixed(1) },
   { key: 'Age', label: 'Age' },
   { key: 'Team', label: 'Team' },
   { key: 'G', label: 'G' },
@@ -24,7 +25,7 @@ const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) =>
   { key: 'WAR', label: 'WAR', format: (v) => v?.toFixed(1) },
 ]
 
-const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Age', 'Team', 'AVG', 'HR']
+const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Position', 'Age', 'Team', 'AVG', 'HR']
 
 const teams = [
   { abbr: 'ARI', name: 'Arizona Diamondbacks' },
@@ -60,9 +61,23 @@ const teams = [
   { abbr: '- - -', name: 'Free Agents' },
 ]
 
+const positions = [
+  { abbr: 'C', name: 'Catcher' },
+  { abbr: '1B', name: 'First Base' },
+  { abbr: '2B', name: 'Second Base' },
+  { abbr: '3B', name: 'Third Base' },
+  { abbr: 'SS', name: 'Shortstop' },
+  { abbr: 'LF', name: 'Left Field' },
+  { abbr: 'CF', name: 'Center Field' },
+  { abbr: 'RF', name: 'Right Field' },
+  { abbr: 'DH', name: 'Designated Hitter' },
+  { abbr: 'TWP', name: 'Two Way Player' }
+]
+
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
+  const [selectedPosition, setSelectedPosition] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [playersPerPage] = useState<number>(25)
   const indexOfLastPlayer = currentPage * playersPerPage
@@ -93,7 +108,8 @@ export function PlayersPage() {
 
   const filteredPlayers = players.filter((p) => {
     const matchesTeam = selectedTeam ? p.Team === selectedTeam : true
-    return matchesTeam
+    const matchesPosition = selectedPosition ? p.Position === selectedPosition : true
+    return matchesTeam && matchesPosition
   })
 
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
@@ -186,6 +202,18 @@ export function PlayersPage() {
             {teams.map((team) => (
               <option key={team.abbr} value={team.abbr}>
                 {team.name}
+              </option>
+            ))}
+          </select>
+          <select
+            id="position-select"
+            onChange={(e) => setSelectedPosition(e.target.value)}
+            value={selectedPosition}
+          >
+            <option value="">Pos</option>
+            {positions.map((pos) => (
+              <option key={pos.abbr} value={pos.abbr}>
+                {pos.name}
               </option>
             ))}
           </select>
