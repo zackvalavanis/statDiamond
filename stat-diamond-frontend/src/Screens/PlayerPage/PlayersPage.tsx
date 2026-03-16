@@ -7,7 +7,6 @@ const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) =>
   { key: 'Name', label: 'Name' },
   { key: 'Position', label: 'POS' },
   { key: 'Age', label: 'Age' },
-  { key: 'Dol', label: 'Salary', format: (v) => `$${Number(v).toLocaleString()}` },
   { key: 'Team', label: 'Team' },
   { key: 'G', label: 'G' },
   { key: 'AB', label: 'AB' },
@@ -26,7 +25,7 @@ const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) =>
   { key: 'WAR', label: 'WAR', format: (v) => v?.toFixed(1) },
 ]
 
-const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Position', 'Dol', 'Age', 'Team', 'AVG', 'HR']
+const DEFAULT_COLUMNS: (keyof Player)[] = ['Name', 'Position', 'Age', 'Team', 'AVG', 'HR']
 
 const teams = [
   { abbr: 'ARI', name: 'Arizona Diamondbacks' },

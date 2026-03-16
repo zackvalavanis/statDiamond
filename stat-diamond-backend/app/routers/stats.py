@@ -6,9 +6,14 @@ import math
 import unicodedata
 import requests
 from app.routers.teams import MLB_TEAM_IDS
-
-
+from pybaseball import chadwick_register
 from functools import lru_cache
+from bs4 import BeautifulSoup
+
+@lru_cache(maxsize=1)
+def get_id_mapping():
+    reg = chadwick_register()
+    return dict(zip(reg['key_fangraphs'], reg['key_mlbam']))
 
 @lru_cache(maxsize=10)
 def get_all_positions(season: int) -> dict:
@@ -80,26 +85,6 @@ def get_statcast_data(
 
     return clean_records(df.head(limit))
 
-
-@router.get("/player/lookup")
-def lookup_player(
-    first: str = Query(..., description="Player first name"),
-    last: str = Query(..., description="Player last name"),
-):
-    """Look up a player's IDs by name."""
-    try:
-        result = playerid_lookup(last, first)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Player lookup failed: {e}")
-
-    if result is None or result.empty:
-        raise HTTPException(status_code=404, detail=f"No player found: {first} {last}")
-
-    return clean_records(result)
-
-
-
-
 @router.get('/player/pitching')
 def get_pitching_stats(
     start: int = Query(..., description="Start season (e.g. 2024)"),
@@ -113,9 +98,11 @@ def get_pitching_stats(
     if df is None or df.empty:
         return []
 
+    fg_to_mlb = get_id_mapping()
     positions = get_all_positions(start)
     df = df.copy()
     df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
+    df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
     return clean_records(df)
 
 @router.get('/player/batting')
@@ -131,9 +118,11 @@ def get_batting_stats(
     if df is None or df.empty: 
         return []
     
+    fg_to_mlb = get_id_mapping()
     positions = get_all_positions(start)
     df = df.copy()
     df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
+    df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
     return clean_records(df)
 
 
@@ -157,3 +146,5 @@ def get_roster(
     df = df.copy()
     df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     return clean_records(df)
+
+

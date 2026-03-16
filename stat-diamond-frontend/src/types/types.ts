@@ -26,6 +26,31 @@ export interface Player {
   SO?: string
   Position?: string | null
   Dol?: string | null
+  key_mlbam?: number
+  key_bbref?: string
+}
+
+export interface PlayerSplit {
+  season: string
+  team: { id: number; name: string }
+  stat: {
+    gamesPlayed: number
+    atBats: number
+    plateAppearances: number
+    hits: number
+    homeRuns: number
+    runs: number
+    rbi: number
+    stolenBases: number
+    baseOnBalls: number
+    strikeOuts: number
+    avg: string
+    obp: string
+    slg: string
+    ops: string
+    doubles: number
+    triples: number
+  }
 }
 
 export interface PlayerModalProps {

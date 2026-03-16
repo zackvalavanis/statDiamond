@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ── Page Layout ── */
+.player-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2.5rem 2rem 4rem;
+  background: #0d0d0d;
+  color: #e8e6e1;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/* ── Player Header ── */
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.player-headshot {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(201, 168, 76, 0.3);
+  background: #1a1a1a;
+}
+
+.player-info h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.05em;
+  color: #e8e6e1;
+  margin: 0 0 0.3rem;
+}
+
+.player-info p {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #777;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+/* ── Stats Section ── */
+.player-stats-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.player-stats-container h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b8b5ad;
+  margin-bottom: 1rem;
+}
+
+/* ── Table ── */
+.yearly-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ── Table Headers ── */
+.yearly-stats-table thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.yearly-stats-table th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #777;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.yearly-stats-table th:first-child,
+.yearly-stats-table th:nth-child(2) {
+  text-align: left;
+}
+
+/* ── Table Cells ── */
+.yearly-stats-table td {
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #b8b5ad;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+}
+
+.yearly-stats-table td:first-child,
+.yearly-stats-table td:nth-child(2) {
+  text-align: left;
+}
+
+/* ── Season Column ── */
+.yearly-stats-table td:first-child {
+  font-weight: 500;
+  color: #e8e6e1;
+}
+
+/* ── Team Column ── */
+.yearly-stats-table td:nth-child(2) {
+  color: #c9a84c;
+  font-weight: 500;
+}
+
+/* ── Alternating Row Tint ── */
+.yearly-stats-table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.yearly-stats-table tbody tr:hover {
+  background-color: rgba(201, 168, 76, 0.05);
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .player-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .player-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+
+  .player-headshot {
+    width: 100px;
+    height: 100px;
+  }
+
+  .player-info h1 {
+    font-size: 1.8rem;
+  }
+
+  .yearly-stats-table th,
+  .yearly-stats-table td {
+    padding: 0.55rem 0.6rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .player-header {
+    padding: 1rem;
+  }
+
+  .player-headshot {
+    width: 80px;
+    height: 80px;
+  }
+
+  .player-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .player-stats-container {
+    overflow-x: auto;
+  }
+}

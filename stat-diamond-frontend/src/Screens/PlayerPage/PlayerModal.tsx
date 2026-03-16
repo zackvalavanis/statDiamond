@@ -1,10 +1,15 @@
 import type { PlayerModalProps } from '../../types/types'
 import { useAuth } from '../../Context/UseAuth'
 import './PlayerModal.css'
+import { useNavigate } from 'react-router-dom'
+import type { Player } from '../../types/types'
 
 
 export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
   const { token, user } = useAuth()
+  const navigate = useNavigate()
+
+  console.log(player?.key_mlbam)
 
   const handleFollowPlayer = async () => {
     try {
@@ -30,6 +35,11 @@ export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
     }
   }
 
+  const navigateToPlayer = (player: Player) => {
+    navigate(`/player/${player.IDfg}`, { state: { player } })
+  }
+
+
 
   if (!show || !player) {
     return null
@@ -41,6 +51,7 @@ export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
       <p>Team: {player.Team}</p>
       <p>Age: {player.Age}</p>
       <p>AVG: {player.AVG}</p>
+      <button onClick={() => navigateToPlayer(player)}>Player Page</button>
       {user && <button onClick={handleFollowPlayer}>Follow Player</button>}
       <button onClick={onClose}>Close</button>
     </div>
