@@ -6,6 +6,7 @@ CORS_ORIGINS = [
   "http://localhost:8080",  # Vue
   "https://statdiamond-production.up.railway.app"
   "https://stat-diamond.vercel.app/"
+  "https://stat-diamond-kvcyqrlow-zackvalavanis-projects.vercel.app/"
 ]
 
 class Settings(BaseSettings): 
