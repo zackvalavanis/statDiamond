@@ -13,6 +13,7 @@ export function MainPage() {
   const now = new Date()
   const current_year = now.getFullYear()
   const navigate = useNavigate()
+  const api = import.meta.env.VITE_API_URL
 
 
 
@@ -20,8 +21,8 @@ export function MainPage() {
     const handleFetchTopAverages = async () => {
       try {
         const season = 2025;
-        const res = await fetch(`http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`)
-        const res2 = await fetch(`http://localhost:8000/api/stats/player/pitching?start=${season}&end=${season}&min_ip=20`)
+        const res = await fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`)
+        const res2 = await fetch(`${api}/api/stats/player/pitching?start=${season}&end=${season}&min_ip=20`)
         const data = await res.json()
         const data2 = await res2.json()
         const top_batting_averages = (data.sort((a: { batting_average: number }, b: { batting_average: number }) => b.batting_average - a.batting_average).slice(0, 10))

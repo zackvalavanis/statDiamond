@@ -7,6 +7,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(localStorage.getItem('access_token'))
   const [isLoading, setIsLoading] = useState(true)
+  const api = import.meta.env.VITE_API_URL
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -16,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const res = await fetch('http://localhost:8000/api/auth/me', {
+        const res = await fetch(`${api}/api/auth/me`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -42,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (newToken: string) => {
     localStorage.setItem('access_token', newToken)
     setToken(newToken)
-    const res = await fetch('http://localhost:8000/api/auth/me', {
+    const res = await fetch(`${api}/api/auth/me`, {
       headers: {
         'Authorization': `Bearer ${newToken}`
       }

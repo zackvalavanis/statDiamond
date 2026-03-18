@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 export function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
+  const api = import.meta.env.VITE_API_URL
   const [formData, setFormData] = useState<LoginInfo>({
     username: "",
     password: ""
@@ -17,7 +18,7 @@ export function Login() {
 
   const handlelogin = async (formdata: LoginInfo) => {
     try {
-      const res = await fetch('http://localhost:8000/api/auth/login', {
+      const res = await fetch(`${api}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-type": "application/x-www-form-urlencoded"

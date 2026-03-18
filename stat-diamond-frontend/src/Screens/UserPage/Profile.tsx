@@ -7,6 +7,7 @@ import type { FavoritePlayer } from "../../types/types"
 export function Profile() {
   const [favoritePlayers, setFavoritePlayers] = useState<FavoritePlayer[]>([])
   const { token, user } = useAuth()
+  const api = import.meta.env.VITE_API_URL
 
 
 
@@ -17,7 +18,7 @@ export function Profile() {
         return
       }
       try {
-        const res = await fetch('http://localhost:8000/api/favorites/players', {
+        const res = await fetch(`${api}/api/favorites/players`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

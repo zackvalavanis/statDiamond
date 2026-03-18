@@ -13,6 +13,7 @@ const fields = [
 
 export function CreateUser() {
   const navigate = useNavigate()
+  const api = import.meta.env.VITE_API_URL
   const [formData, setFormData] = useState<CreateUserInfo>({
     name: "",
     email: '',
@@ -21,7 +22,7 @@ export function CreateUser() {
 
   const handleCreateUser = async (formData: CreateUserInfo) => {
     try {
-      const res = await fetch("http://localhost:8000/api/auth/signup", {
+      const res = await fetch(`${api}/api/auth/signup`, {
         "method": 'POST',
         headers: {
           'content-type': 'application/json',

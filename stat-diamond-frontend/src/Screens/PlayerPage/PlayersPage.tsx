@@ -93,6 +93,7 @@ export function PlayersPage() {
   const [columnDropdownOpen, setColumnDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const api = import.meta.env.VITE_API_URL
 
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
@@ -139,7 +140,7 @@ export function PlayersPage() {
       try {
         const season = selectedSeason || 2024
         const res = await fetch(
-          `http://localhost:8000/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`
+          `${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`
         )
         const data = await res.json()
         console.log(data)

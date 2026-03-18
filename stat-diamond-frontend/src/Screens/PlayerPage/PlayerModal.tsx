@@ -8,12 +8,13 @@ import type { Player } from '../../types/types'
 export function PlayerModal({ show, onClose, player }: PlayerModalProps) {
   const { token, user } = useAuth()
   const navigate = useNavigate()
+  const api = import.meta.env.VITE_API_URL
 
   console.log(player?.key_mlbam)
 
   const handleFollowPlayer = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/favorites/players', {
+      const res = await fetch(`${api}/api/favorites/players`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

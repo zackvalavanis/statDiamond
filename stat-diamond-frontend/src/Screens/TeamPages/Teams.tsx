@@ -17,11 +17,12 @@ const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 export function Teams() {
   const [standings, setStandings] = useState<StandingsRow[]>([]);
   const [season, setSeason] = useState<number>(2025)
+  const api = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const handleFetchStandings = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/standings?season=${season}`)
+        const res = await fetch(`${api}/api/standings?season=${season}`)
         const data: StandingsRow[] = await res.json()
 
         console.log('API response:', data)

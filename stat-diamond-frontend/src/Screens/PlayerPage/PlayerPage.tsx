@@ -9,8 +9,9 @@ export function PlayerPage() {
   const location = useLocation()
   const player = location.state?.player as Player
   const [yearlyStats, setYearlyStats] = useState<PlayerSplit[]>([])
-  const [salary, setSalary] = useState('')
-  const first_letter = (player.Name[0])
+  // const [salary, setSalary] = useState('')
+  // const first_letter = (player.Name[0])
+  // const api = import.meta.env.VITE_API_URL
 
   const mlbStats = yearlyStats.filter((split) => split.team)
 
