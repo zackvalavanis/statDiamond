@@ -1,12 +1,10 @@
 from pydantic_settings import BaseSettings
 
 CORS_ORIGINS = [
-  "http://localhost:5173",  # Vite
-  "http://localhost:3000",  # React
-  "http://localhost:8080",  # Vue
-  "https://statdiamond-production.up.railway.app"
-  "https://stat-diamond.vercel.app/"
-  "https://stat-diamond-kvcyqrlow-zackvalavanis-projects.vercel.app/"
+    "http://localhost:5173",  # Local dev
+    "https://stat-diamond.vercel.app",  # Vercel production
+    "https://stat-diamond-kvcyqrlow-zackvalavanis-projects.vercel.app",  # Vercel preview
+    "*"  # Allow all for now (change later)
 ]
 
 class Settings(BaseSettings): 
