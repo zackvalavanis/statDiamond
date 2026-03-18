@@ -1,4 +1,13 @@
+nano .gitignore
+```
+
+**Add these lines:**
+```
+# Environment variables
 .env
+.env.local
+.env.development
+.env.production
 env
 
 # Python
