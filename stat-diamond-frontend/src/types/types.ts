@@ -115,7 +115,8 @@ export interface Roster {
   RBI?: number        // RBIs
   BB?: number         // Walks
   K?: number          // Strikeouts
-  Pos?: string        // Position (if available)
+  Pos?: string
+  Position?: string | null
 }
 
 

@@ -6,13 +6,14 @@ import type { Roster } from '../../types/types'
 export function TeamDetails() {
   const { teamId } = useParams()
   const [roster, setRoster] = useState<Roster[]>([])
+  const api = import.meta.env.VITE_API_URL
 
 
 
   useEffect(() => {
     const handleGetTeam = async (teamId: string) => {
       try {
-        const res = await fetch(`http://localhost:8000/api/teams/${teamId}/roster`)
+        const res = await fetch(`${api}/api/teams/${teamId}/roster`)
         const data = await res.json()
         setRoster(data)
       } catch (error) {
@@ -26,14 +27,25 @@ export function TeamDetails() {
     <div>
       <h1>{teamId}</h1>
       <h1>Roster</h1>
-      {roster.map((player) => (
-        <div key={player.IDfg}>
-          <p>{player.Name}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>AB</th>
+          </tr>
+        </thead>
+        <tbody>
+          {roster.map((player) => (
+            <tr key={player.IDfg}>
+              <td>{player.Name}</td>
+              <td>{player.Position}</td>
+              <td>{player.AB}</td>
 
-        </div>
-      ))}
-
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
-
 }
