@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Query, HTTPException
-from pybaseball import batting_stats
+from functools import lru_cache
 import pandas as pd
 import numpy as np
 import math
 import requests
 import unicodedata
+from pybaseball import batting_stats, batting_stats_bref, pitching_stats
 
 
 TEAM_ABBREV = {
@@ -40,7 +41,6 @@ TEAM_ABBREV = {
     "Washington Nationals": "WSN",
 }
 
-
 MLB_TEAM_IDS = {
     "Arizona Diamondbacks": 109,
     "Atlanta Braves": 144,
@@ -74,6 +74,20 @@ MLB_TEAM_IDS = {
     "Washington Nationals": 120,
 }
 
+
+@lru_cache(maxsize=10)
+def get_all_positions(season: int) -> dict:
+    """Fetch position data for all teams from MLB API"""
+    positions = {}
+    for team_name, mlb_id in MLB_TEAM_IDS.items():
+        url = f"https://statsapi.mlb.com/api/v1/teams/{mlb_id}/roster?season={season}"
+        res = requests.get(url)
+        roster_data = res.json().get("roster", [])
+        for p in roster_data:
+            positions[normalize_name(p["person"]["fullName"])] = p["position"]["abbreviation"]
+    return positions
+
+
 def normalize_name(name: str) -> str:
     # Remove accents
     name = unicodedata.normalize('NFD', name)
@@ -83,7 +97,6 @@ def normalize_name(name: str) -> str:
     for suffix in [' jr.', ' jr', ' sr.', ' sr', ' ii', ' iii', ' iv']:
         name = name.replace(suffix, '')
     return name.strip()
-
 
 
 def sanitize_value(val):
@@ -104,6 +117,7 @@ def sanitize_value(val):
         return None
     return val
 
+
 def clean_records(df: pd.DataFrame) -> list[dict]:
     """Convert DataFrame to list of dicts with all values JSON-safe."""
     records = df.to_dict(orient="records")
@@ -112,38 +126,44 @@ def clean_records(df: pd.DataFrame) -> list[dict]:
         for row in records
     ]
 
+
 router = APIRouter(prefix="/api/teams", tags=["teams"])
 
 
 @router.get('/{team_id}/roster')
-def get_team_roster(team_id: str, season: int = 2024):
-    mlb_id = MLB_TEAM_IDS.get(team_id)
-    abbrev = TEAM_ABBREV.get(team_id, team_id)
+def get_team_roster(team_id: str, season: int = 2025):
+    print(f"========= ROSTER ENDPOINT: team_id={team_id} =========")
     
-    if not mlb_id:
-        raise HTTPException(status_code=404, detail="Team not found")
-    
-    # Get roster with positions from MLB API
-    url = f"https://statsapi.mlb.com/api/v1/teams/{mlb_id}/roster?season={season}"
-    res = requests.get(url)
-    roster_data = res.json().get("roster", [])
-    
-    # Build a position lookup by player name
-    positions = {
-    normalize_name(p["person"]["fullName"]): p["position"]["abbreviation"]
-    for p in roster_data
-    }
-    
-    # Get batting stats from pybaseballa
-    df = batting_stats(season, season, qual=1)
-    team_players = df[df['Team'] == abbrev]
-    
-    # Add position to each player
-    team_players["Position"] = team_players["Name"].map(
-        lambda n: positions.get(normalize_name(n))
-    )
+    try:
+        team_abbrev = TEAM_ABBREV.get(team_id)
+        if not team_abbrev:
+            raise HTTPException(status_code=404, detail=f"Unknown team: {team_id}")
         
-    return clean_records(team_players)
+        print(f"Using abbreviation: {team_abbrev}")
+        
+        positions = get_all_positions(season)
+        
+        # Skip hitters for now - batting_stats_bref has team name issues
+        # We'll fix this tomorrow with proper caching
+        hitters_df = pd.DataFrame()
+        
+        # Get pitchers - uses abbreviations
+        pitchers_df = pitching_stats(season, season, qual=1)
+        pitchers_df = pitchers_df[pitchers_df['Team'] == team_abbrev]
+        print(f"Pitchers for {team_abbrev}: {len(pitchers_df)}")
+        pitchers_df = pitchers_df.copy()
+        pitchers_df["Position"] = "P"
+        pitchers_df["player_type"] = "pitcher"
+        
+        # Combine both
+        roster = pd.concat([hitters_df, pitchers_df], ignore_index=True)
+        print(f"Total roster: {len(roster)}")
+        
+        return clean_records(roster)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/{team_id}/stats")
 def get_team_stats(team_id: str, season: int = 2024):

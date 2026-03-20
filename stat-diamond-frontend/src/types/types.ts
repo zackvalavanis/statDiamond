@@ -4,6 +4,9 @@ export interface Player {
   Name: string
   Team: string
   Age: number
+  '1B'?: number
+  '2B'?: number
+  '3B'?: number
   G?: number
   AB?: number
   PA?: number
@@ -105,18 +108,34 @@ export interface Roster {
   Name: string
   Team: string
   Age: number
-  G?: number          // Games
-  AB?: number         // At Bats
-  H?: number          // Hits
-  AVG?: number        // Batting Average
-  OBP?: number        // On Base Percentage
-  SLG?: number        // Slugging
-  HR?: number         // Home Runs
-  RBI?: number        // RBIs
-  BB?: number         // Walks
-  K?: number          // Strikeouts
+  '1B'?: number
+  '2B'?: number
+  '3B'?: number
+  G?: number
+  AB?: number
+  PA?: number
+  H?: number
+  R?: number
+  HR?: number
+  RBI?: number
+  SB?: number
+  BB?: number
+  K?: number
+  'BB%'?: number
+  'K%'?: number
+  AVG?: number
+  OBP?: number
+  SLG?: number
+  OPS?: number
+  WAR?: number
   Pos?: string
+  ERA?: string
+  SO?: string
   Position?: string | null
+  Dol?: string | null
+  key_mlbam?: number
+  key_bbref?: string
+  player_type: string
 }
 
 

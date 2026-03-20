@@ -117,7 +117,7 @@ def get_batting_stats(
         raise HTTPException(status_code=502, detail=f"Failed to fetch batting data: {e}")
     if df is None or df.empty: 
         return []
-    
+        
     fg_to_mlb = get_id_mapping()
     positions = get_all_positions(start)
     df = df.copy()
@@ -147,4 +147,35 @@ def get_roster(
     df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     return clean_records(df)
 
-
+@router.get("/player/{player_name}/ids")
+def get_player_ids(player_name: str):
+    """Get Baseball Reference and MLB IDs for a specific player"""
+    try:
+        # Remove suffixes (Jr., Sr., II, III, IV)
+        clean_name = player_name
+        for suffix in [' Jr.', ' Sr.', ' II', ' III', ' IV', ' Jr', ' Sr']:
+            clean_name = clean_name.replace(suffix, '')
+        
+        # Split name
+        name_parts = clean_name.strip().split(' ', 1)
+        first = name_parts[0] if len(name_parts) > 0 else ''
+        last = name_parts[1] if len(name_parts) > 1 else name_parts[0]
+        
+        # Look up IDs
+        lookup = playerid_lookup(last, first)
+        
+        if lookup.empty:
+            raise HTTPException(status_code=404, detail=f"Player not found: {player_name}")
+        
+        player = lookup.iloc[0]
+        
+        # Convert numpy types to Python types
+        return {
+            'key_mlbam': int(player['key_mlbam']) if pd.notna(player['key_mlbam']) else None,
+            'key_bbref': str(player['key_bbref']) if pd.notna(player['key_bbref']) else None,
+            'key_fangraphs': str(player['key_fangraphs']) if pd.notna(player['key_fangraphs']) else None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

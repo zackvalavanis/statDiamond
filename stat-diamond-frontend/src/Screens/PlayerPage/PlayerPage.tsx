@@ -11,7 +11,8 @@ export function PlayerPage() {
   const [yearlyStats, setYearlyStats] = useState<PlayerSplit[]>([])
   // const [salary, setSalary] = useState('')
   // const first_letter = (player.Name[0])
-  // const api = import.meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL
+  // const [playerIds, setPlayerIds] = useState<{ key_mlbam: number, key_bbref: string } | null>(null)
 
   const mlbStats = yearlyStats.filter((split) => split.team)
 
@@ -62,19 +63,37 @@ export function PlayerPage() {
       }
     }
 
-    // const fetchSalary = async () => {
-    //   const res = await fetch(`https://www.baseball-reference.com/players/${first_letter}/${player.key_bbref}.shtml`)
-    //   const data = await res.json()
-    //   console.log(data);
-    // } catch (error) {
-    //   console.log(error)
+    // const fetchPlayerIds = async () => {
+    //   try {
+    //     const res = await fetch(`${api}/api/stats/player/${encodeURIComponent(player.Name)}/ids`)
+    //     const ids = await res.json()
+    //     setPlayerIds(ids)
+    //     console.log('Baseball Reference ID:', ids.key_bbref)
+
+    //     // RIGHT HERE - after we have the bbref ID
+    //     if (ids.key_bbref) {
+    //       fetchSalary(ids.key_bbref)  // ← Calls fetchSalary with the ID
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching IDs:', error)
+    //   }
     // }
 
+    // const fetchSalary = async (key_bbref: string) => {
+    //   try {
+    //     const first_letter = player.Name[0].toLowerCase()
+    //     const res = await fetch(`https://www.baseball-reference.com/players/${first_letter}/${key_bbref}.shtml`)
+    //     const data = await res.json()
+    //     console.log("Salary data:", data)
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // }
+    // if (player?.Name) {
+    //   fetchPlayerIds()  // This will call fetchSalary after getting IDs
+    // }
     fetchStats()
-
-  }, [player?.key_mlbam])
-
-
+  }, [player?.key_mlbam, player.Name, api])
 
 
   return (
