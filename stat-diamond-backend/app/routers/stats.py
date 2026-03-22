@@ -93,21 +93,51 @@ def get_statcast_data(
 def get_pitching_stats(
     start: int = Query(..., description="Start season (e.g. 2024)"),
     end: int = Query(..., description="End season (e.g. 2025)"),
-    min_ip: int = Query(1, description="Minimum innings pitched qualifier")
+    min_ip: int = Query(1, description="Minimum innings pitched qualifier"),
+    db: Session = Depends(get_db)
 ):
+    cache_key = f"pitching_{start}_{end}_{min_ip}"
+    
+    # Try cache
     try:
-        df = pitching_stats(start, end, qual=min_ip)
+        cached = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start,
+            CachedStats.expires_at > datetime.utcnow()
+        ).first()
+        
+        if cached:
+            print(f"✅ CACHE HIT: {cache_key}")
+            return cached.data
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch pitching data: {e}")
-    if df is None or df.empty:
-        return []
-
+        print(f"⚠️ Cache unavailable: {str(e)[:100]}")
+    
+    # Fetch from FanGraphs
+    print(f"❌ Fetching from FanGraphs: {cache_key}")
+    df = pitching_stats(start, end, qual=min_ip)
+    
+    # Add MLB IDs
     fg_to_mlb = get_id_mapping()
-    positions = get_all_positions(start)
     df = df.copy()
-    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
-    return clean_records(df)
+    
+    data = clean_records(df)
+    
+    # Try to save cache
+    try:
+        new_cache = CachedStats(
+            stat_type=cache_key,
+            season=start,
+            data=data,
+            expires_at=datetime.utcnow() + timedelta(hours=24)
+        )
+        db.add(new_cache)
+        db.commit()
+        print(f"💾 CACHED: {cache_key}")
+    except:
+        pass
+    
+    return data
 
 @router.get("/player/batting")
 def get_batting_stats(
