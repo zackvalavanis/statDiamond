@@ -150,8 +150,11 @@ def get_batting_stats(
         return data
         
     except Exception as e:
+        print(f"❌ ERROR in get_batting_stats: {str(e)}")  # Add this
+        import traceback
+        traceback.print_exc()  # Add this
         raise HTTPException(status_code=500, detail=str(e))
-        
+
 
 @router.get('/player/roster')
 def get_roster(
