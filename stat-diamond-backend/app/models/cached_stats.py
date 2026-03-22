@@ -6,6 +6,8 @@ from datetime import datetime
 
 
 class CachedStats(Base): 
+  __tablename__ = "cached_stats"
+
   id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
   stat_type = Column(String(50), nullable=False)
   season = Column(Integer, nullable=False)
