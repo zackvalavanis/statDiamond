@@ -164,6 +164,12 @@ def get_batting_stats(
         
         # Fetch from FanGraphs
         df = batting_stats(start, end, qual=min_pa)
+        
+        # Add MLB IDs ← ADD THIS
+        fg_to_mlb = get_id_mapping()
+        df = df.copy()
+        df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
+        
         data = clean_records(df)
         
         # Save to cache (expires in 24 hours)
@@ -180,11 +186,10 @@ def get_batting_stats(
         return data
         
     except Exception as e:
-        print(f"❌ ERROR in get_batting_stats: {str(e)}")  # Add this
+        print(f"❌ ERROR in get_batting_stats: {str(e)}")
         import traceback
-        traceback.print_exc()  # Add this
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get('/player/roster')
 def get_roster(

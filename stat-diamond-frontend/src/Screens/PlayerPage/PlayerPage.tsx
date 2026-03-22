@@ -51,7 +51,7 @@ export function PlayerPage() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!player?.key_mlbam) {
+      if (!player?.key_mlbam && player?.Name) {
         console.error('No MLB ID for player:', player?.Name)
         setYearlyStats([])
         return
