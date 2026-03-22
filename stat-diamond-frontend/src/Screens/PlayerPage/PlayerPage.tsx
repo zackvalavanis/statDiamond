@@ -51,54 +51,24 @@ export function PlayerPage() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!player?.key_mlbam && player?.Name) {
-        console.error('No MLB ID for player:', player?.Name)
+      if (!player?.key_mlbam) {
+        console.warn('No MLB ID for player:', player?.Name)
         setYearlyStats([])
         return
       }
+
       try {
         const res = await fetch(`https://statsapi.mlb.com/api/v1/people/${player.key_mlbam}/stats?stats=yearByYear&group=hitting`)
         const data = await res.json()
-        console.log(data);
         const splits = data.stats?.[0]?.splits || []
-        console.log("splits:", splits)
         setYearlyStats(splits)
       } catch (error) {
         console.log(error)
       }
     }
 
-    // const fetchPlayerIds = async () => {
-    //   try {
-    //     const res = await fetch(`${api}/api/stats/player/${encodeURIComponent(player.Name)}/ids`)
-    //     const ids = await res.json()
-    //     setPlayerIds(ids)
-    //     console.log('Baseball Reference ID:', ids.key_bbref)
-
-    //     // RIGHT HERE - after we have the bbref ID
-    //     if (ids.key_bbref) {
-    //       fetchSalary(ids.key_bbref)  // ← Calls fetchSalary with the ID
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching IDs:', error)
-    //   }
-    // }
-
-    // const fetchSalary = async (key_bbref: string) => {
-    //   try {
-    //     const first_letter = player.Name[0].toLowerCase()
-    //     const res = await fetch(`https://www.baseball-reference.com/players/${first_letter}/${key_bbref}.shtml`)
-    //     const data = await res.json()
-    //     console.log("Salary data:", data)
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // }
-    // if (player?.Name) {
-    //   fetchPlayerIds()  // This will call fetchSalary after getting IDs
-    // }
     fetchStats()
-  }, [player?.key_mlbam, player.Name, api])
+  }, [player?.key_mlbam, player?.Name])
 
 
   return (
