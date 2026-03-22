@@ -1,14 +1,18 @@
-from fastapi import APIRouter, Query, HTTPException
-from pybaseball import statcast, statcast_pitcher, playerid_lookup, batting_stats, pitching_stats, batting_stats_bref
+from fastapi import APIRouter, Query, HTTPException, Depends
+from pybaseball import batting_stats, pitching_stats, playerid_lookup, chadwick_register
+from functools import lru_cache
+from datetime import datetime, timedelta
+from sqlalchemy.orm import Session
 import numpy as np
 import pandas as pd
 import math
 import unicodedata
 import requests
+
 from app.routers.teams import MLB_TEAM_IDS
-from pybaseball import chadwick_register
-from functools import lru_cache
-from bs4 import BeautifulSoup
+from app.models.cached_stats import CachedStats
+from app.dependencies import get_db
+
 
 @lru_cache(maxsize=1)
 def get_id_mapping():
@@ -105,26 +109,49 @@ def get_pitching_stats(
     df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
     return clean_records(df)
 
-@router.get('/player/batting')
+@router.get("/player/batting")
 def get_batting_stats(
-    start: int = Query(..., description="Start season (e.g. 2024)"), 
-    end: int = Query(..., description="End season (e.g. 2025)"), 
-    min_pa: int = Query(1, description="Minimum plate appearances")
-): 
-    try: 
-        df = batting_stats(start, end, qual=min_pa)
-    except Exception as e: 
-        raise HTTPException(status_code=502, detail=f"Failed to fetch batting data: {e}")
-    if df is None or df.empty: 
-        return []
+    start: int, 
+    end: int, 
+    min_pa: int = 1,
+    db: Session = Depends(get_db)
+):
+    try:
+        cache_key = f"batting_{start}_{end}_{min_pa}"
         
-    fg_to_mlb = get_id_mapping()
-    positions = get_all_positions(start)
-    df = df.copy()
-    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
-    df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
-    return clean_records(df)
-
+        # Check cache
+        cached = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start,
+            CachedStats.expires_at > datetime.utcnow()
+        ).first()
+        
+        if cached:
+            print(f"✅ CACHE HIT: {cache_key}")
+            return cached.data
+        
+        print(f"❌ CACHE MISS: {cache_key} - Fetching from FanGraphs...")
+        
+        # Fetch from FanGraphs
+        df = batting_stats(start, end, qual=min_pa)
+        data = clean_records(df)
+        
+        # Save to cache (expires in 24 hours)
+        new_cache = CachedStats(
+            stat_type=cache_key,
+            season=start,
+            data=data,
+            expires_at=datetime.utcnow() + timedelta(hours=24)
+        )
+        db.add(new_cache)
+        db.commit()
+        
+        print(f"💾 CACHED: {cache_key}")
+        return data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 @router.get('/player/roster')
 def get_roster(
