@@ -68,7 +68,7 @@ export function MainPage() {
                   <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
-                    <td>{leaders.AVG}</td>
+                    <td>{leaders.AVG?.toFixed(3)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -116,7 +116,7 @@ export function MainPage() {
                   <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
-                    <td>{leaders.ERA}</td>
+                    <td>{leaders.ERA ? Number(leaders.ERA).toFixed(2) : 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>

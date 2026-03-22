@@ -125,9 +125,10 @@
 
 /* ── First Place Highlight ── */
 .table tbody tr:first-child td {
-  color: #e8e6e1;
-  font-weight: 500;
+  color: #c9a84c;
+  font-weight: 1000;
 }
+
 
 /* ── Links ── */
 .table a {

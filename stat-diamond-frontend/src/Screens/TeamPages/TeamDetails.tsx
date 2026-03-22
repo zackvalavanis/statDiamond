@@ -42,8 +42,8 @@ export function TeamDetails() {
   const [roster, setRoster] = useState<Roster[]>([])
   const api = import.meta.env.VITE_API_URL
   const team_id = teamId && teamId in MLB_TEAM_CAP_IDS ? MLB_TEAM_CAP_IDS[teamId] : 0
-  const hitters = roster.filter(p => p.player_type === 'hitter')
-  const pitchers = roster.filter(p => p.player_type === 'pitcher')
+  const hitters = roster.filter(p => p.player_type === 'hitter' && (p.AB || 0) > 3)
+  const pitchers = roster.filter(p => p.player_type === 'pitcher' && (p.IP || 0) > 1)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,6 +132,7 @@ export function TeamDetails() {
             <th>#</th>
             <th>Name</th>
             <th>Age</th>
+            <th>Position</th>
             <th>W</th>
             <th>L</th>
             <th>ERA</th>
@@ -150,6 +151,7 @@ export function TeamDetails() {
               <td>{index + 1}</td>
               <td>{player.Name}</td>
               <td>{player.Age}</td>
+              <td>{player.Position}</td>
               <td>{player.W}</td>
               <td>{player.L}</td>
               <td>{player.ERA?.toFixed(2)}</td>
