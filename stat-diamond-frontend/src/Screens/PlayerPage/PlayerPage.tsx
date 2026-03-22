@@ -11,7 +11,7 @@ export function PlayerPage() {
   const [yearlyStats, setYearlyStats] = useState<PlayerSplit[]>([])
   // const [salary, setSalary] = useState('')
   // const first_letter = (player.Name[0])
-  const api = import.meta.env.VITE_API_URL
+  // const api = import.meta.env.VITE_API_URL
   // const [playerIds, setPlayerIds] = useState<{ key_mlbam: number, key_bbref: string } | null>(null)
 
   const mlbStats = yearlyStats.filter((split) => split.team)
