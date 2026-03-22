@@ -96,7 +96,7 @@ def get_pitching_stats(
     min_ip: int = Query(1, description="Minimum innings pitched qualifier"),
     db: Session = Depends(get_db)
 ):
-    cache_key = f"pitching_{start}_{end}_{min_ip}"
+    cache_key = f"pitching_v2_{start}_{end}_{min_ip}"
     
     # Try cache
     try:
@@ -116,10 +116,13 @@ def get_pitching_stats(
     print(f"❌ Fetching from FanGraphs: {cache_key}")
     df = pitching_stats(start, end, qual=min_ip)
     
-    # Add MLB IDs
+    # Add MLB IDs and Positions
     fg_to_mlb = get_id_mapping()
+    positions = get_all_positions(start)
+    
     df = df.copy()
     df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
+    df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
     
     data = clean_records(df)
     
@@ -147,7 +150,7 @@ def get_batting_stats(
     db: Session = Depends(get_db)
 ):
     try:
-        cache_key = f"batting_{start}_{end}_{min_pa}"
+        cache_key = f"batting_v2_{start}_{end}_{min_pa}"
         
         # Check cache
         cached = db.query(CachedStats).filter(
@@ -165,10 +168,13 @@ def get_batting_stats(
         # Fetch from FanGraphs
         df = batting_stats(start, end, qual=min_pa)
         
-        # Add MLB IDs ← ADD THIS
+        # Add MLB IDs and Positions
         fg_to_mlb = get_id_mapping()
+        positions = get_all_positions(start)
+        
         df = df.copy()
         df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
+        df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
         
         data = clean_records(df)
         

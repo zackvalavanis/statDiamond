@@ -1,6 +1,7 @@
 import './PlayersPage.css'
 import { PlayerModal } from './PlayerModal'
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Player } from '../../types/types'
 
 const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
@@ -77,11 +78,10 @@ const positions = [
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
+  const navigate = useNavigate()
   const [selectedPosition, setSelectedPosition] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [playersPerPage] = useState<number>(25)
-  const indexOfLastPlayer = currentPage * playersPerPage
-  const indexOfFirstPlayer = indexOfLastPlayer - playersPerPage
   const [players, setPlayers] = useState<Player[]>([])
   const [isModalShowing, setIsModalShowing] = useState<boolean>(false)
   const [selectedTeam, setSelectedTeam] = useState('')
@@ -94,7 +94,6 @@ export function PlayersPage() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const api = import.meta.env.VITE_API_URL
-
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
 
@@ -120,10 +119,6 @@ export function PlayersPage() {
     let valA = a[sortKey]
     let valB = b[sortKey]
 
-    if (sortKey == 'Dol') {
-      valA = Number(String(valA).replace(/[$,]/g, '')) || 0
-      valB = Number(String(valB).replace(/[$,]/g, '')) || 0
-    }
     if (typeof valA === 'number' && typeof valB === 'number') {
       return ascending ? valA - valB : valB - valA
     }
@@ -138,19 +133,18 @@ export function PlayersPage() {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const season = selectedSeason || 2024
+        const season = selectedSeason || 2025
         const res = await fetch(
           `${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`
         )
         const data = await res.json()
-        console.log(data)
         setPlayers(data)
       } catch (error) {
         console.log(error)
       }
     }
     fetchPlayers()
-  }, [selectedSeason])
+  }, [selectedSeason, api])
 
   const handleSort = (key: keyof Player) => {
     if (sortKey === key) {
@@ -167,16 +161,12 @@ export function PlayersPage() {
     )
   }
 
-  const handlePlayerModalShowing = (player: Player) => {
-    setSelectedPlayer(player)
-    setIsModalShowing(true)
+  const handlePlayerClick = (player: Player) => {
+    navigate(`/player/${player.IDfg}`, { state: { player } })
   }
 
-  const handlePlayerModalClose = () => {
-    setIsModalShowing(false)
-  }
-
-
+  const indexOfLastPlayer = currentPage * playersPerPage
+  const indexOfFirstPlayer = indexOfLastPlayer - playersPerPage
   const currentPlayers = sortedPlayers.slice(indexOfFirstPlayer, indexOfLastPlayer)
   const totalPages = Math.ceil(sortedPlayers.length / playersPerPage)
 
@@ -192,10 +182,10 @@ export function PlayersPage() {
     }
   }
 
+  // Reset to first page when filters change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCurrentPage(1)  // ← Reset to first page
-  }, [selectedTeam, selectedSeason])
+    setCurrentPage(1)
+  }, [selectedTeam, selectedSeason, selectedPosition, searchQuery])
 
   return (
     <div className="players-page">
@@ -272,9 +262,7 @@ export function PlayersPage() {
             </div>
           )}
           <div>
-            <button
-              onClick={() => setVisibleColumns(DEFAULT_COLUMNS)}
-            >
+            <button onClick={() => setVisibleColumns(DEFAULT_COLUMNS)}>
               Clear Filters
             </button>
           </div>
@@ -305,7 +293,8 @@ export function PlayersPage() {
                 <tr
                   className="players-container"
                   key={`${player.IDfg}-${player.Season}`}
-                  onClick={() => handlePlayerModalShowing(player)}
+                  onClick={() => handlePlayerClick(player)}
+                  style={{ cursor: 'pointer' }}
                 >
                   {activeColumns.map((col) => (
                     <td key={col.key}>
@@ -326,8 +315,8 @@ export function PlayersPage() {
           </tbody>
         </table>
       </div>
-      {/* Pagination - always visible */}
-      <div style={{ display: "flex", alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '40px' }} className="pagination-controls">
+
+      <div className="pagination-controls" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '40px' }}>
         <button onClick={prevPage} disabled={currentPage === 1}>
           Previous
         </button>
@@ -339,11 +328,10 @@ export function PlayersPage() {
         </button>
       </div>
 
-      {/* Modal overlay - only when open */}
-      {isModalShowing && (
-        <div className='modal-overlay' onClick={handlePlayerModalClose}>
+      {isModalShowing && selectedPlayer && (
+        <div className='modal-overlay' onClick={() => setIsModalShowing(false)}>
           <div onClick={(e) => e.stopPropagation()}>
-            <PlayerModal show={isModalShowing} onClose={handlePlayerModalClose} player={selectedPlayer} />
+            <PlayerModal show={isModalShowing} onClose={() => setIsModalShowing(false)} player={selectedPlayer} />
           </div>
         </div>
       )}
