@@ -129,13 +129,18 @@ export interface Roster {
   OPS?: number
   WAR?: number
   Pos?: string
-  ERA?: string
+  ERA?: number
   SO?: string
   Position?: string | null
   Dol?: string | null
   key_mlbam?: number
   key_bbref?: string
   player_type: string
+  WHIP: number
+  GS?: number
+  IP?: number
+  W?: number
+  L?: number
 }
 
 

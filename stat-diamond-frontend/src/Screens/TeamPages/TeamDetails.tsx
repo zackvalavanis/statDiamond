@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import './TeamDetails.css'
 import { useEffect, useState } from 'react'
 import type { Roster } from '../../types/types'
+import { useNavigate } from 'react-router-dom'
 
 const MLB_TEAM_CAP_IDS: Record<string, number> = {
   'Arizona Diamondbacks': 109,
@@ -41,10 +42,9 @@ export function TeamDetails() {
   const [roster, setRoster] = useState<Roster[]>([])
   const api = import.meta.env.VITE_API_URL
   const team_id = teamId && teamId in MLB_TEAM_CAP_IDS ? MLB_TEAM_CAP_IDS[teamId] : 0
-  const hitters = roster.filter(p => p.Position != 'p')
-  const pitchers = roster.filter(p => p.Position === 'p')
-  console.log(hitters)
-  console.log(pitchers)
+  const hitters = roster.filter(p => p.player_type === 'hitter')
+  const pitchers = roster.filter(p => p.player_type === 'pitcher')
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -63,6 +63,10 @@ export function TeamDetails() {
 
   }, [teamId])
 
+  const handlePlayerRouter = (player: Roster) => {
+    navigate(`/player/${player.IDfg}`, { state: { player } })
+  }
+
 
   return (
     <div className='team-page'>
@@ -80,6 +84,7 @@ export function TeamDetails() {
             <th>Name</th>
             <th>Age</th>
             <th>Position</th>
+            <th>WAR</th>
             <th>AB</th>
             <th>H</th>
             <th>2B</th>
@@ -96,12 +101,13 @@ export function TeamDetails() {
           </tr>
         </thead>
         <tbody>
-          {hitters.sort((a, b) => b.AB - a.AB).map((player, index) => (
-            <tr key={player.IDfg}>
+          {hitters.sort((a, b) => (b.AB || 0) - (a.AB || 0)).map((player, index) => (
+            <tr onClick={() => handlePlayerRouter(player)} key={player.IDfg} style={{ cursor: 'pointer' }}>
               <td>{index + 1}</td>
               <td>{player.Name}</td>
               <td>{player.Age}</td>
               <td>{player.Position}</td>
+              <td>{player.WAR?.toFixed(2)}</td>
               <td>{player.AB}</td>
               <td>{player['H']}</td>
               <td>{player['2B']}</td>
@@ -109,9 +115,9 @@ export function TeamDetails() {
               <td>{player.HR}</td>
               <td>{player.BB}</td>
               <td>{player.RBI}</td>
-              <td>{player.AVG}</td>
-              <td>{player.OBP}</td>
-              <td>{player.SLG}</td>
+              <td>{player.AVG?.toFixed(3)}</td>
+              <td>{player.OBP?.toFixed(3)}</td>
+              <td>{player.SLG?.toFixed(3)}</td>
               <td>{player.K}</td>
               <td>{player.SB}</td>
             </tr>
@@ -126,41 +132,33 @@ export function TeamDetails() {
             <th>#</th>
             <th>Name</th>
             <th>Age</th>
-            <th>Position</th>
-            <th>AB</th>
-            <th>H</th>
-            <th>2B</th>
-            <th>3B</th>
-            <th>HR</th>
-            <th>BB</th>
-            <th>RBI</th>
-            <th>AVG</th>
-            <th>OBP</th>
-            <th>SLG</th>
+            <th>W</th>
+            <th>L</th>
+            <th>ERA</th>
+            <th>G</th>
+            <th>GS</th>
+            <th>IP</th>
             <th>K</th>
-            <th>SB</th>
+            <th>BB</th>
+            <th>WHIP</th>
 
           </tr>
         </thead>
         <tbody>
-          {pitchers.sort((a, b) => b.AB - a.AB).map((player, index) => (
-            <tr key={player.IDfg}>
+          {pitchers.sort((a, b) => (b.IP || 0) - (a.IP || 0)).map((player, index) => (
+            <tr onClick={() => handlePlayerRouter(player)} key={player.IDfg} style={{ cursor: 'pointer' }}>
               <td>{index + 1}</td>
               <td>{player.Name}</td>
               <td>{player.Age}</td>
-              <td>{player.Position}</td>
-              <td>{player.AB}</td>
-              <td>{player['H']}</td>
-              <td>{player['2B']}</td>
-              <td>{player['3B']}</td>
-              <td>{player.HR}</td>
+              <td>{player.W}</td>
+              <td>{player.L}</td>
+              <td>{player.ERA?.toFixed(2)}</td>
+              <td>{player.G}</td>
+              <td>{player.GS}</td>
+              <td>{player.IP?.toFixed(1)}</td>
+              <td>{player.SO}</td>
               <td>{player.BB}</td>
-              <td>{player.RBI}</td>
-              <td>{player.AVG}</td>
-              <td>{player.OBP}</td>
-              <td>{player.SLG}</td>
-              <td>{player.K}</td>
-              <td>{player.SB}</td>
+              <td>{player.WHIP?.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>

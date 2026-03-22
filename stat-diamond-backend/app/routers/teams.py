@@ -5,7 +5,7 @@ import numpy as np
 import math
 import requests
 import unicodedata
-from pybaseball import batting_stats, batting_stats_bref, pitching_stats
+from pybaseball import batting_stats, pitching_stats, chadwick_register
 
 
 TEAM_ABBREV = {
@@ -75,6 +75,13 @@ MLB_TEAM_IDS = {
 }
 
 
+@lru_cache(maxsize=1)
+def get_id_mapping():
+    """Map FanGraphs ID to MLB ID"""
+    reg = chadwick_register()
+    return dict(zip(reg['key_fangraphs'], reg['key_mlbam']))
+
+
 @lru_cache(maxsize=10)
 def get_all_positions(season: int) -> dict:
     """Fetch position data for all teams from MLB API"""
@@ -142,17 +149,24 @@ def get_team_roster(team_id: str, season: int = 2025):
         print(f"Using abbreviation: {team_abbrev}")
         
         positions = get_all_positions(season)
+        fg_to_mlb = get_id_mapping()
         
-        # Skip hitters for now - batting_stats_bref has team name issues
-        # We'll fix this tomorrow with proper caching
-        hitters_df = pd.DataFrame()
+        # Get hitters
+        hitters_df = batting_stats(season, season, qual=1)
+        hitters_df = hitters_df[hitters_df['Team'] == team_abbrev]
+        print(f"Hitters for {team_abbrev}: {len(hitters_df)}")
+        hitters_df = hitters_df.copy()
+        hitters_df["Position"] = hitters_df["Name"].map(lambda n: positions.get(normalize_name(n)))
+        hitters_df["key_mlbam"] = hitters_df["IDfg"].map(fg_to_mlb)
+        hitters_df["player_type"] = "hitter"
         
-        # Get pitchers - uses abbreviations
+        # Get pitchers
         pitchers_df = pitching_stats(season, season, qual=1)
         pitchers_df = pitchers_df[pitchers_df['Team'] == team_abbrev]
         print(f"Pitchers for {team_abbrev}: {len(pitchers_df)}")
         pitchers_df = pitchers_df.copy()
         pitchers_df["Position"] = "P"
+        pitchers_df["key_mlbam"] = pitchers_df["IDfg"].map(fg_to_mlb)
         pitchers_df["player_type"] = "pitcher"
         
         # Combine both

@@ -51,6 +51,11 @@ export function PlayerPage() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (!player?.key_mlbam) {
+        console.error('No MLB ID for player:', player?.Name)
+        setYearlyStats([])
+        return
+      }
       try {
         const res = await fetch(`https://statsapi.mlb.com/api/v1/people/${player.key_mlbam}/stats?stats=yearByYear&group=hitting`)
         const data = await res.json()
