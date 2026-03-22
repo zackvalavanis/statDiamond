@@ -66,6 +66,29 @@
   margin-bottom: 1rem;
 }
 
+
+.player-bio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.player-bio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+
 /* ── Table ── */
 .yearly-stats-table {
   width: 100%;
@@ -78,16 +101,18 @@
 }
 
 /* ── Table Headers ── */
-.yearly-stats-table thead {
+.yearly-stats-table thead,
+.player-bio-table thead {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.yearly-stats-table th {
+.yearly-stats-table th,
+.player-bio-table th {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #777;
+  color: rgb(213, 213, 213);
   padding: 0.75rem 1rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -96,12 +121,14 @@
 }
 
 .yearly-stats-table th:first-child,
-.yearly-stats-table th:nth-child(2) {
+.yearly-stats-table th:nth-child(2),
+.player-bio-table th:nth-child(2) {
   text-align: left;
 }
 
 /* ── Table Cells ── */
-.yearly-stats-table td {
+.yearly-stats-table td,
+.player-bio-table td {
   padding: 0.65rem 1rem;
   font-size: 0.88rem;
   font-weight: 400;
@@ -112,12 +139,14 @@
 }
 
 .yearly-stats-table td:first-child,
-.yearly-stats-table td:nth-child(2) {
+.yearly-stats-table td:nth-child(2),
+.player-bio-table td:nth-child(2) {
   text-align: left;
 }
 
 /* ── Season Column ── */
-.yearly-stats-table td:first-child {
+.yearly-stats-table td:first-child,
+.player-bio-table td {
   font-weight: 500;
   color: #e8e6e1;
 }

@@ -70,6 +70,7 @@ export function PlayerPage() {
     fetchStats()
   }, [player?.key_mlbam, player?.Name])
 
+  console.log(player)
 
   return (
     <div className='player-page'>
@@ -79,6 +80,21 @@ export function PlayerPage() {
         className="player-headshot"
       />
       {player.Name}
+      <div className='player-bio'>
+        <table className="player-bio-table">
+          <thead>
+            <th>Salary</th>
+            <th>Age</th>
+
+          </thead>
+          <tbody>
+            <td>{player.Dol} M</td>
+            <td>{player.Age}</td>
+          </tbody>
+        </table>
+
+
+      </div>
       <table className="yearly-stats-table">
         <thead>
           <tr>
