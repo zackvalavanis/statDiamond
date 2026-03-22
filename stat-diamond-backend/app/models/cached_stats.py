@@ -14,7 +14,3 @@ class CachedStats(Base):
   data = Column(JSONB, nullable=False)
   cached_at = Column(DateTime, default=datetime.utcnow)
   expires_at = Column(DateTime, nullable=False)
-
-  __table_args__ = (
-      Index('idx_cached_stats_lookup', 'stat_type', 'season', 'expires_at'),
-  )
