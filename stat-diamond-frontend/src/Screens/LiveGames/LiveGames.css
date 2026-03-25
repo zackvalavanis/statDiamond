@@ -87,6 +87,25 @@
   text-align: center;
 }
 
+.team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.team-name {
+  font-weight: 500;
+  color: #e8e6e0;
+}
+
+.team-record {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 400;
+}
+
+
 .game-details-table td {
   padding: 1rem 1.25rem;
   font-size: 0.9rem;

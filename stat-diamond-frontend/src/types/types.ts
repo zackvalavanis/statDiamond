@@ -152,6 +152,9 @@ export interface LiveGame {
   home_team: string
   inning: number
   status: string
+  away_record: string
+  home_record: string
+  game_time: string
 }
 
 

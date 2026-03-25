@@ -7,6 +7,19 @@ export function LiveGames() {
   const [liveGames, setLiveGames] = useState<LiveGame[]>([])
   const api = import.meta.env.VITE_API_URL
 
+  const formatGameTime = (isoString: string) => {
+    const date = new Date(isoString)
+
+    const timeString = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: 'America/New_York',
+      timeZoneName: 'short'
+    })
+
+    return timeString
+  }
+
 
   useEffect(() => {
     const fetchLiveGames = async () => {
@@ -20,6 +33,8 @@ export function LiveGames() {
 
     return () => clearInterval(interval)
   }, [])
+
+  console.log(liveGames)
 
   return (
     <div className="live-games-container">
@@ -38,16 +53,28 @@ export function LiveGames() {
             <th>Score</th>
             <th>Home</th>
             <th>Score</th>
+            <th>Game Time</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {liveGames.map(game => (
             <tr key={game.game_id}>
-              <td>{game.away_team}</td>
+              <td>
+                <div className="team-info">
+                  <div className="team-name">{game.away_team}</div>
+                  <div className="team-record">{game.away_record}</div>
+                </div>
+              </td>
               <td>{game.away_score}</td>
-              <td>{game.home_team}</td>
+              <td>
+                <div className="team-info">
+                  <div className="team-name">{game.home_team}</div>
+                  <div className="team-record">{game.home_record}</div>
+                </div>
+              </td>
               <td>{game.home_score}</td>
+              <td>{formatGameTime(game.game_time)}</td>
               <td>
                 <span className={`status-${game.status.toLowerCase().includes('live') ? 'live' : game.status.toLowerCase().includes('final') ? 'final' : 'scheduled'}`}>
                   {game.status}

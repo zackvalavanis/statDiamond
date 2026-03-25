@@ -257,11 +257,34 @@ def get_live_games():
                 games.append({
                     'game_id': game['gamePk'],
                     'status': game['status']['detailedState'],
+                    'status_code': game['status']['statusCode'], 
+                    
+                    #teams
                     'away_team': game['teams']['away']['team']['name'],
                     'away_score': game['teams']['away'].get('score', 0),
+                    'away_record': f"{game['teams']['away'].get('leagueRecord', {}).get('wins', 0)}-{game['teams']['away'].get('leagueRecord', {}).get('losses', 0)}",
+
                     'home_team': game['teams']['home']['team']['name'],
                     'home_score': game['teams']['home'].get('score', 0),
+                    'home_record': f"{game['teams']['away'].get('leagueRecord', {}).get('wins', 0)}-{game['teams']['away'].get('leagueRecord', {}).get('losses', 0)}",
+        
                     'inning': game.get('linescore', {}).get('currentInning'),
+                    'inning_state': game.get('linescore', {}).get('inningState'),  # 'Top', 'Middle', 'Bottom', 'End'
+                    'is_top_inning': game.get('linescore', {}).get('isTopInning'),
+
+                    'game_time': game.get('gameDate'),  # ISO timestamp
+                    'scheduled_innings': game.get('scheduledInnings', 9),
+
+                    'inning': game.get('linescore', {}).get('currentInning'),
+                    'game-time': game.get(''),
+
+                    'venue': game.get('venue', {}).get('name'),
+
+                    'balls': game.get('linescore', {}).get('balls'),
+                    'strikes': game.get('linescore', {}).get('strikes'),
+                    'outs': game.get('linescore', {}).get('outs'),
+
+                    'game_type': game.get('gameType'),
                 })
         
         return games
