@@ -1,7 +1,6 @@
 import './PlayersPage.css'
 import { PlayerModal } from './PlayerModal'
 import { useState, useEffect, useRef } from 'react'
-// import { useNavigate } from 'react-router-dom'
 import type { Player } from '../../types/types'
 
 const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
@@ -78,7 +77,6 @@ const positions = [
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
-  // const navigate = useNavigate()
   const [selectedPosition, setSelectedPosition] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [playersPerPage] = useState<number>(25)
@@ -94,6 +92,11 @@ export function PlayersPage() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const api = import.meta.env.VITE_API_URL
+
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedTeam, selectedSeason, selectedPosition, searchQuery])
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
 
@@ -160,14 +163,12 @@ export function PlayersPage() {
     )
   }
 
-  // const handlePlayerClick = (player: Player) => {
-  //   navigate(`/player/${player.IDfg}`, { state: { player } })
-  // }
 
   const handlePlayerClick = (player: Player) => {
     setSelectedPlayer(player)
     setIsModalShowing(true)
   }
+
 
   const indexOfLastPlayer = currentPage * playersPerPage
   const indexOfFirstPlayer = indexOfLastPlayer - playersPerPage
@@ -185,11 +186,6 @@ export function PlayersPage() {
       setCurrentPage(currentPage - 1)
     }
   }
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedTeam, selectedSeason, selectedPosition, searchQuery])
 
   return (
     <div className="players-page">
