@@ -1,0 +1,189 @@
+.live-games-container {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+
+
+.live-games-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(201, 168, 76, 0.3);
+}
+
+.live-games-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #c9a84c;
+  letter-spacing: -0.02em;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #b8b5ad;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.game-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.game-details-table thead {
+  background: rgba(255, 255, 255, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.game-details-table th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4c4c4;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.game-details-table th:nth-child(2),
+.game-details-table th:nth-child(4) {
+  text-align: center;
+}
+
+.game-details-table td {
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #b8b5ad;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.game-details-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.game-details-table tbody tr:hover {
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.game-details-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Team names */
+.game-details-table td:nth-child(1),
+.game-details-table td:nth-child(3) {
+  font-weight: 500;
+  color: #e8e6e0;
+}
+
+/* Scores */
+.game-details-table td:nth-child(2),
+.game-details-table td:nth-child(4) {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #c9a84c;
+}
+
+/* Status column */
+.game-details-table td:nth-child(5) {
+  text-align: center;
+}
+
+.status-live {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-final {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #888;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-scheduled {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.no-games {
+  text-align: center;
+  padding: 3rem;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+
+  .game-details-table th,
+  .game-details-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .live-games-header h1 {
+    font-size: 1.4rem;
+  }
+}

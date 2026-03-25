@@ -13,6 +13,8 @@ import { TeamDetails } from './Screens/TeamPages/TeamDetails'
 import { Toaster } from 'react-hot-toast'
 import { AdvancedStatsPage } from './Screens/AdvancedStats/AdvancedStatsPage'
 import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
+import { News } from './Screens/News /News'
+import { LiveGames } from './Screens/LiveGames/LiveGames'
 
 
 function App() {
@@ -37,7 +39,10 @@ function App() {
         { path: '/profile', element: <Profile /> },
         { path: `/teams`, element: <Teams /> },
         { path: `/teams/:teamId`, element: <TeamDetails /> },
-        { path: '/advanced-stats', element: <AdvancedStatsPage /> }
+        { path: '/advanced-stats', element: <AdvancedStatsPage /> },
+        { path: '/news', element: <News /> },
+        { path: '/live-games', element: <LiveGames /> },
+
       ]
     }
   ])

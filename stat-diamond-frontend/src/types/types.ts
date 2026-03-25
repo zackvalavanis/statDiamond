@@ -143,4 +143,17 @@ export interface Roster {
   L?: number
 }
 
+export interface LiveGame {
+  id: number
+  away_score: number
+  away_team: string
+  game_id: number
+  home_score: number
+  home_team: string
+  inning: number
+  status: string
+}
+
+
+
 

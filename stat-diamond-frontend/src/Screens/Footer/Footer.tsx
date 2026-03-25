@@ -29,6 +29,8 @@ export function Footer() {
               </>
             )}
             <Link to='advanced-stats'>Advanced Stats</Link>
+            <Link to='/player'>Hitting Stats</Link>
+            <Link to='/player'>Pitching Stats</Link>
           </div>
         </footer>
       </div>

@@ -8,6 +8,7 @@ import pandas as pd
 import math
 import unicodedata
 import requests
+from datetime import datetime
 
 from app.routers.teams import MLB_TEAM_IDS
 from app.models.cached_stats import CachedStats
@@ -238,5 +239,31 @@ def get_player_ids(player_name: str):
         }
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/live-games")
+def get_live_games():
+    """Get today's live game scores from MLB Stats API"""
+    try:
+        today = datetime.now().strftime('%Y-%m-%d')
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}"
+        res = requests.get(url)
+        data = res.json()
+        
+        games = []
+        for date in data.get('dates', []):
+            for game in date.get('games', []):
+                games.append({
+                    'game_id': game['gamePk'],
+                    'status': game['status']['detailedState'],
+                    'away_team': game['teams']['away']['team']['name'],
+                    'away_score': game['teams']['away'].get('score', 0),
+                    'home_team': game['teams']['home']['team']['name'],
+                    'home_score': game['teams']['home'].get('score', 0),
+                    'inning': game.get('linescore', {}).get('currentInning'),
+                })
+        
+        return games
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
