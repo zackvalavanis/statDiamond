@@ -1,7 +1,7 @@
 import './PlayersPage.css'
 import { PlayerModal } from './PlayerModal'
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import type { Player } from '../../types/types'
 
 const ALL_COLUMNS: { key: keyof Player; label: string; format?: (val: number) => string }[] = [
@@ -78,7 +78,7 @@ const positions = [
 const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
 
 export function PlayersPage() {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [selectedPosition, setSelectedPosition] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [playersPerPage] = useState<number>(25)
@@ -97,7 +97,6 @@ export function PlayersPage() {
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -116,8 +115,8 @@ export function PlayersPage() {
   })
 
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
-    let valA = a[sortKey]
-    let valB = b[sortKey]
+    const valA = a[sortKey]
+    const valB = b[sortKey]
 
     if (typeof valA === 'number' && typeof valB === 'number') {
       return ascending ? valA - valB : valB - valA
@@ -161,8 +160,13 @@ export function PlayersPage() {
     )
   }
 
+  // const handlePlayerClick = (player: Player) => {
+  //   navigate(`/player/${player.IDfg}`, { state: { player } })
+  // }
+
   const handlePlayerClick = (player: Player) => {
-    navigate(`/player/${player.IDfg}`, { state: { player } })
+    setSelectedPlayer(player)
+    setIsModalShowing(true)
   }
 
   const indexOfLastPlayer = currentPage * playersPerPage
