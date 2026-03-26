@@ -27,7 +27,7 @@ export function MainPage() {
         ])
         const data = await res.json()
         const data2 = await res2.json()
-        const top_batting_averages = data.sort((a, b) => (b.AVG || 0) - (a.AVG || 0)).slice(0, 10)
+        const top_batting_averages = data.sort((a: { AVG: number }, b: { AVG: number }) => (b.AVG || 0) - (a.AVG || 0)).slice(0, 10)
         setTopBattingAvg(top_batting_averages)
         const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
         setTopHomeRun(topHomeRun)
