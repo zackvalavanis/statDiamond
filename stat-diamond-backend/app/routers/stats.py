@@ -9,6 +9,7 @@ import math
 import unicodedata
 import requests
 from datetime import datetime
+from pytz import timezone 
 
 from app.routers.teams import MLB_TEAM_IDS
 from app.models.cached_stats import CachedStats
@@ -246,7 +247,8 @@ def get_player_ids(player_name: str):
 def get_live_games():
     """Get today's live game scores from MLB Stats API"""
     try:
-        today = datetime.now().strftime('%Y-%m-%d')
+        eastern = timezone('America/New_York')
+        today = datetime.now(eastern).strftime('%Y-%m-%d')
         url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=linescore,team"
 
         res = requests.get(url)
