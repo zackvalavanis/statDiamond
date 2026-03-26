@@ -22,12 +22,12 @@ export function MainPage() {
       try {
         const season = 2025;
         const [res, res2] = await Promise.all([
-          fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=1`),
+          fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=200`),
           fetch(`${api}/api/stats/player/pitching?start=${season}&end=${season}&min_ip=20`)
         ])
         const data = await res.json()
         const data2 = await res2.json()
-        const top_batting_averages = (data.sort((a: { batting_average: number }, b: { batting_average: number }) => b.batting_average - a.batting_average).slice(0, 10))
+        const top_batting_averages = data.sort((a, b) => (b.AVG || 0) - (a.AVG || 0)).slice(0, 10)
         setTopBattingAvg(top_batting_averages)
         const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
         setTopHomeRun(topHomeRun)
