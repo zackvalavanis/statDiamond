@@ -12,7 +12,7 @@ interface StandingsRow {
   division: string;
 }
 
-const seasons = Array.from({ length: 2025 - 1900 + 1 }, (_, i) => 2025 - i)
+const seasons = Array.from({ length: 2026 - 1900 + 1 }, (_, i) => 2026 - i)
 
 export function Teams() {
   const [standings, setStandings] = useState<StandingsRow[]>([]);

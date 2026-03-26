@@ -4,8 +4,6 @@
   padding: 0 1.5rem;
 }
 
-
-
 .live-games-header {
   display: flex;
   align-items: center;
@@ -74,7 +72,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #c4c4c4;
+  color: #888;
   padding: 1rem 1.25rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -82,29 +80,9 @@
   user-select: none;
 }
 
-.game-details-table th:nth-child(2),
-.game-details-table th:nth-child(4) {
+.game-details-table th:nth-child(2) {
   text-align: center;
 }
-
-.team-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.team-name {
-  font-weight: 500;
-  color: #e8e6e0;
-}
-
-.team-record {
-  font-size: 0.75rem;
-  color: #888;
-  font-weight: 400;
-}
-
 
 .game-details-table td {
   padding: 1rem 1.25rem;
@@ -127,25 +105,46 @@
   border-bottom: none;
 }
 
-/* Team names */
-.game-details-table td:nth-child(1),
-.game-details-table td:nth-child(3) {
+.team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.team-name {
   font-weight: 500;
   color: #e8e6e0;
 }
 
-/* Scores */
-.game-details-table td:nth-child(2),
-.game-details-table td:nth-child(4) {
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #c9a84c;
+.team-record {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 400;
 }
 
-/* Status column */
-.game-details-table td:nth-child(5) {
+.score-cell {
   text-align: center;
+  font-weight: 600;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.score {
+  font-size: 1.2rem;
+  color: #c9a84c;
+  font-weight: 600;
+}
+
+.score-separator {
+  color: #555;
+  font-weight: 400;
+  font-size: 0.9rem;
 }
 
 .status-live {
@@ -204,5 +203,9 @@
 
   .live-games-header h1 {
     font-size: 1.4rem;
+  }
+
+  .score {
+    font-size: 1rem;
   }
 }

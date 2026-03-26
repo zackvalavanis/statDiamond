@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import type { LiveGame } from "../../types/types"
 import './LiveGames.css'
+import { useNavigate } from "react-router-dom"
 
 
 export function LiveGames() {
   const [liveGames, setLiveGames] = useState<LiveGame[]>([])
   const api = import.meta.env.VITE_API_URL
+  const navigate = useNavigate();
 
   const formatGameTime = (isoString: string) => {
     const date = new Date(isoString)
@@ -34,7 +36,9 @@ export function LiveGames() {
     return () => clearInterval(interval)
   }, [])
 
-  console.log(liveGames)
+  const handleGamePage = (game: LiveGame) => {
+    navigate(`/live-games/${game.game_id}/`, { state: { game } })
+  }
 
   return (
     <div className="live-games-container">
@@ -52,29 +56,41 @@ export function LiveGames() {
             <th>Away</th>
             <th>Score</th>
             <th>Home</th>
-            <th>Score</th>
             <th>Game Time</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {liveGames.map(game => (
-            <tr key={game.game_id}>
+            <tr
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleGamePage(game)}
+              key={game.game_id}
+            >
               <td>
                 <div className="team-info">
                   <div className="team-name">{game.away_team}</div>
                   <div className="team-record">{game.away_record}</div>
                 </div>
               </td>
-              <td>{game.away_score}</td>
+
+              <td className="score-cell">
+                <div className="score-display">
+                  <span className="score">{game.away_score}</span>
+                  <span className="score-separator">-</span>
+                  <span className="score">{game.home_score}</span>
+                </div>
+              </td>
+
               <td>
                 <div className="team-info">
                   <div className="team-name">{game.home_team}</div>
                   <div className="team-record">{game.home_record}</div>
                 </div>
               </td>
-              <td>{game.home_score}</td>
+
               <td>{formatGameTime(game.game_time)}</td>
+
               <td>
                 <span className={`status-${game.status.toLowerCase().includes('live') ? 'live' : game.status.toLowerCase().includes('final') ? 'final' : 'scheduled'}`}>
                   {game.status}
