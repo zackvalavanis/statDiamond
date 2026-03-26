@@ -39,6 +39,7 @@ export function LiveGamePage() {
             </span>
           )}
         </div>
+        <div>{game.id}</div>
         <div className="venue-info">{game.venue}</div>
       </div>
 

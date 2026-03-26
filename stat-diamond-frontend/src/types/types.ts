@@ -161,6 +161,7 @@ export interface LiveGame {
   strikes: number
   outs: number
   game_type: string
+  venue: string
 }
 
 
