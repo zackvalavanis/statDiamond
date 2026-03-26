@@ -39,7 +39,7 @@ export function LiveGamePage() {
             </span>
           )}
         </div>
-        <div>{game.id}</div>
+        <div>{gameId}</div>
         <div className="venue-info">{game.venue}</div>
       </div>
 
