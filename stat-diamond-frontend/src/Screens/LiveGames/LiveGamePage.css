@@ -184,6 +184,25 @@
   color: #e8e6e0;
 }
 
+.live-indicator-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.live-dot-small {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
 @media (max-width: 768px) {
   .scoreboard {
     grid-template-columns: 1fr;

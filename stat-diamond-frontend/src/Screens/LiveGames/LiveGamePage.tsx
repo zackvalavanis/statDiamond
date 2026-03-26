@@ -1,11 +1,14 @@
 import type { LiveGame } from "../../types/types"
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import './LiveGamePage.css'
 
 export function LiveGamePage() {
   const location = useLocation()
-  // const { gameId } = useParams()
-  const game = location.state?.game as LiveGame
+  const { gameId } = useParams()
+  const initialGame = location.state?.game as LiveGame
+  const [game, setGame] = useState<LiveGame | null>(initialGame)
+  const api = import.meta.env.VITE_API_URL
 
   const getInningSymbol = (state: string | null) => {
     if (!state) return ''
@@ -18,6 +21,33 @@ export function LiveGamePage() {
     return symbols[state] || ''
   }
 
+  useEffect(() => {
+    if (!gameId) return
+
+    const fetchGameData = async () => {
+      try {
+        const res = await fetch(`${api}/api/stats/live-games`)
+        const games = await res.json()
+        const updatedGame = games.find((g: LiveGame) => g.game_id.toString() === gameId)
+        if (updatedGame) {
+          setGame(updatedGame)
+        }
+      } catch (error) {
+        console.error('Error fetching game data:', error)
+      }
+    }
+
+    // Fetch immediately if we don't have game data
+    if (!game) {
+      fetchGameData()
+    }
+
+    // Set up auto-refresh every 15 seconds
+    const interval = setInterval(fetchGameData, 15000)
+
+    return () => clearInterval(interval)
+  }, [gameId, api])
+
   if (!game) {
     return (
       <div className="game-page-loading">
@@ -25,7 +55,6 @@ export function LiveGamePage() {
       </div>
     )
   }
-
 
   return (
     <div className="live-game-page">
@@ -65,6 +94,10 @@ export function LiveGamePage() {
 
       {game.status_code === 'I' && (
         <div className="live-stats">
+          <div className="live-indicator-small">
+            <div className="live-dot-small"></div>
+            Updates every 15s
+          </div>
           <div className="count-display">
             <div className="count-item">
               <span className="count-label">Balls</span>
@@ -86,6 +119,10 @@ export function LiveGamePage() {
         <div className="detail-item">
           <span className="detail-label">Game Type</span>
           <span className="detail-value">{game.game_type === 'R' ? 'Regular Season' : 'Playoff'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Venue</span>
+          <span className="detail-value">{game.venue}</span>
         </div>
       </div>
     </div>
