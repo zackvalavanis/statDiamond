@@ -1,10 +1,10 @@
 import type { LiveGame } from "../../types/types"
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import './LiveGamePage.css'
 
 export function LiveGamePage() {
   const location = useLocation()
-  const { gameId } = useParams()
+  // const { gameId } = useParams()
   const game = location.state?.game as LiveGame
 
   const getInningSymbol = (state: string | null) => {
@@ -26,6 +26,7 @@ export function LiveGamePage() {
     )
   }
 
+
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -39,7 +40,6 @@ export function LiveGamePage() {
             </span>
           )}
         </div>
-        <div>{gameId}</div>
         <div className="venue-info">{game.venue}</div>
       </div>
 
