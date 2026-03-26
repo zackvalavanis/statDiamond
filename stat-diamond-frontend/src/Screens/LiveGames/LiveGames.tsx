@@ -22,6 +22,17 @@ export function LiveGames() {
     return timeString
   }
 
+  const getInningSymbol = (state: string | null) => {
+    if (!state) return ''
+    const symbols = {
+      'Top': '▲',      // Top of inning
+      'Bottom': '▼',   // Bottom of inning  
+      'Middle': '◆',   // Middle (between innings)
+      'End': '■'       // End of inning
+    }
+    return symbols[state as keyof typeof symbols] || ''
+  }
+
 
   useEffect(() => {
     const fetchLiveGames = async () => {
@@ -40,6 +51,7 @@ export function LiveGames() {
     navigate(`/live-games/${game.game_id}/`, { state: { game } })
   }
 
+  console.log(liveGames)
   return (
     <div className="live-games-container">
       <div className="live-games-header">
@@ -55,6 +67,7 @@ export function LiveGames() {
           <tr>
             <th>Away</th>
             <th>Score</th>
+            <th>Inning</th>
             <th>Home</th>
             <th>Game Time</th>
             <th>Status</th>
@@ -83,11 +96,16 @@ export function LiveGames() {
               </td>
 
               <td>
+                <span className="inning-symbol">{getInningSymbol(game.inning_state)} {game.inning}</span>
+              </td>
+
+              <td>
                 <div className="team-info">
                   <div className="team-name">{game.home_team}</div>
                   <div className="team-record">{game.home_record}</div>
                 </div>
               </td>
+
 
               <td>{formatGameTime(game.game_time)}</td>
 

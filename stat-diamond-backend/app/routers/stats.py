@@ -247,7 +247,8 @@ def get_live_games():
     """Get today's live game scores from MLB Stats API"""
     try:
         today = datetime.now().strftime('%Y-%m-%d')
-        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}"
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=linescore,team"
+
         res = requests.get(url)
         data = res.json()
         
