@@ -327,7 +327,7 @@ export function LiveGamePage() {
                           <td>{index + 1}</td>
                           <td>{player.person.fullName}</td>
                           <td>{player.position.abbreviation}</td>
-                          <td>{player.stats.pitching?.inningsPitched || ''}</td>
+                          <td>{player.stats.pitching?.inningsPitched || 0}</td>
                           <td>{player.stats.pitching?.strikeOuts || 0}</td>
                           <td>{player.stats.pitching?.hits || 0}</td>
                           <td>{player.stats.pitching?.runs || 0}</td>
