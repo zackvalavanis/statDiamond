@@ -262,34 +262,61 @@ def get_live_games():
                     'status': game['status']['detailedState'],
                     'status_code': game['status']['statusCode'], 
                     
-                    #teams
+                    # Teams
                     'away_team': game['teams']['away']['team']['name'],
                     'away_score': game['teams']['away'].get('score', 0),
                     'away_record': f"{game['teams']['away'].get('leagueRecord', {}).get('wins', 0)}-{game['teams']['away'].get('leagueRecord', {}).get('losses', 0)}",
 
                     'home_team': game['teams']['home']['team']['name'],
                     'home_score': game['teams']['home'].get('score', 0),
-                    'home_record': f"{game['teams']['away'].get('leagueRecord', {}).get('wins', 0)}-{game['teams']['away'].get('leagueRecord', {}).get('losses', 0)}",
+                    'home_record': f"{game['teams']['home'].get('leagueRecord', {}).get('wins', 0)}-{game['teams']['home'].get('leagueRecord', {}).get('losses', 0)}",
         
+                    # Game state
                     'inning': game.get('linescore', {}).get('currentInning'),
-                    'inning_state': game.get('linescore', {}).get('inningState'),  # 'Top', 'Middle', 'Bottom', 'End'
+                    'inning_state': game.get('linescore', {}).get('inningState'),
                     'is_top_inning': game.get('linescore', {}).get('isTopInning'),
 
-                    'game_time': game.get('gameDate'),  # ISO timestamp
+                    # Time
+                    'game_time': game.get('gameDate'),
                     'scheduled_innings': game.get('scheduledInnings', 9),
 
-                    'inning': game.get('linescore', {}).get('currentInning'),
-                    'game-time': game.get(''),
-
+                    # Venue
                     'venue': game.get('venue', {}).get('name'),
 
+                    # Live count
                     'balls': game.get('linescore', {}).get('balls'),
                     'strikes': game.get('linescore', {}).get('strikes'),
                     'outs': game.get('linescore', {}).get('outs'),
 
+                    # Type
                     'game_type': game.get('gameType'),
                 })
         
         return games
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/live-games/{game_id}/boxscore")
+def get_box_score(game_id: int): 
+    try: 
+        url = f"https://statsapi.mlb.com/api/v1/game/{game_id}/boxscore"
+        res = requests.get(url)
+        data = res.json()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/live-games/{game_id}/playbyplay")
+def get_play_by_play(game_id: int):
+    """Get pitch-by-pitch play-by-play for a game"""
+    try:
+        url = f"https://statsapi.mlb.com/api/v1/game/{game_id}/playByPlay"
+        res = requests.get(url)
+        data = res.json()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
