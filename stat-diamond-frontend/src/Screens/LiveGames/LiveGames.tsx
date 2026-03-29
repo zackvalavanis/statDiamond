@@ -8,6 +8,9 @@ export function LiveGames() {
   const [liveGames, setLiveGames] = useState<LiveGame[]>([])
   const api = import.meta.env.VITE_API_URL
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  )
 
   const formatGameTime = (isoString: string) => {
     const date = new Date(isoString)
@@ -36,7 +39,7 @@ export function LiveGames() {
 
   useEffect(() => {
     const fetchLiveGames = async () => {
-      const res = await fetch(`${api}/api/stats/live-games`)
+      const res = await fetch(`${api}/api/stats/live-games?date=${selectedDate}`)
       const data = await res.json()
       setLiveGames(data)
     }
@@ -45,17 +48,43 @@ export function LiveGames() {
     const interval = setInterval(fetchLiveGames, 30000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [selectedDate, api])
 
   const handleGamePage = (game: LiveGame) => {
     navigate(`/live-games/${game.game_id}/`, { state: { game } })
   }
 
-  console.log(liveGames)
+  const handlePreviousDay = () => {
+    const date = new Date(selectedDate)
+    date.setDate(date.getDate() - 1);
+    setSelectedDate(date.toISOString().split('T')[0])
+  }
+
+  const handleNextDay = () => {
+    const date = new Date(selectedDate)
+    date.setDate(date.getDate() + 1)
+    setSelectedDate(date.toISOString().split('T')[0])
+  }
+
+  const handleToday = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0])
+  }
+
   return (
     <div className="live-games-container">
       <div className="live-games-header">
         <h1>Live Games</h1>
+        <div className='date-picker'>
+          <button onClick={handlePreviousDay} className='date-nav-btn'>←</button>
+          <input
+            type='date'
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="date-input"
+          />
+          <button onClick={handleNextDay} className='date-nav-btn'>→</button>
+          <button onClick={handleToday} className='today-btn'>Today</button>
+        </div>
         <div className="live-indicator">
           <div className="live-dot"></div>
           Updates every 30s

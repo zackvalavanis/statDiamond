@@ -16,7 +16,7 @@ const seasons = Array.from({ length: 2026 - 1900 + 1 }, (_, i) => 2026 - i)
 
 export function Teams() {
   const [standings, setStandings] = useState<StandingsRow[]>([]);
-  const [season, setSeason] = useState<number>(2025)
+  const [season, setSeason] = useState<number>(2026)
   const api = import.meta.env.VITE_API_URL
 
   useEffect(() => {

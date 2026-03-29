@@ -244,13 +244,15 @@ def get_player_ids(player_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/live-games")
-def get_live_games():
+def get_live_games(date: str = None):
     """Get today's live game scores from MLB Stats API"""
     try:
-        eastern = timezone('America/New_York')
-        today = datetime.now(eastern).strftime('%Y-%m-%d')
-        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=linescore,team"
-
+        if date: 
+            selected_date = date
+        else: 
+            eastern = timezone('America/New_York')
+            selected_date = datetime.now(eastern).strftime('%Y-%m-%d')
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={selected_date}&hydrate=linescore,team"
         res = requests.get(url)
         data = res.json()
         

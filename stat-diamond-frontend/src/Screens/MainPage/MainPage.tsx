@@ -20,10 +20,10 @@ export function MainPage() {
   useEffect(() => {
     const handleFetchTopAverages = async () => {
       try {
-        const season = 2025;
+        const season = 2026;
         const [res, res2] = await Promise.all([
-          fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=200`),
-          fetch(`${api}/api/stats/player/pitching?start=${season}&end=${season}&min_ip=20`)
+          fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=10`),
+          fetch(`${api}/api/stats/player/pitching?start=${season}&end=${season}&min_ip=5`)
         ])
         const data = await res.json()
         const data2 = await res2.json()
