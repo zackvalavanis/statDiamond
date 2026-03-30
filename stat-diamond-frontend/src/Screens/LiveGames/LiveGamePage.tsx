@@ -12,6 +12,9 @@ export function LiveGamePage() {
   const [boxScore, setBoxScore] = useState<any>(null)
   const [livePlay, setLivePlay] = useState<any>(null)
   const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>('away')
+  const [currentBatterId, setCurrentBatterId] = useState<number | null>(null)
+  const [currentPitcherId, setCurrentPitcherId] = useState<number | null>(null)
+
 
   const getInningSymbol = (state: string | null) => {
     if (!state) return ''
@@ -57,6 +60,18 @@ export function LiveGamePage() {
         const res = await fetch(`${api}/api/stats/live-games/${gameId}/playbyplay`)
         const data = await res.json()
         setLivePlay(data)
+
+        if (data?.currentPlay) {
+          const newBatterId = data.currentPlay.matchup.batter.id
+          const newPitcherId = data.currentPlay.matchup.pitcher.id
+
+          if (newBatterId !== currentBatterId) {
+            setCurrentBatterId(newBatterId)
+          }
+          if (newPitcherId !== currentPitcherId) {
+            setCurrentPitcherId(newPitcherId)
+          }
+        }
       } catch (error) {
         console.error('Error fetching play by play', error)
       }
@@ -97,6 +112,7 @@ export function LiveGamePage() {
     )
   }
 
+  // console.log(livePlay?.currentPlay.matchup)
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -156,7 +172,42 @@ export function LiveGamePage() {
 
         </div>
 
-        <div className='play-by-play-middle'>
+        <div className='play-by-play-center'>
+          <div className='top-middle'>
+            <h1>
+              Play by Play
+            </h1>
+
+
+          </div>
+          {livePlay?.currentPlay && currentBatterId && currentPitcherId && (
+            <div className='bottom-middle-information'>
+              <div className='batter-vs-pitcher'>
+                <p>
+                  Pitcher: <strong>{livePlay.currentPlay.matchup.pitcher.fullName}</strong> ({livePlay.currentPlay.matchup.pitchHand.code})
+                </p>
+                <img
+                  src={`https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/${currentPitcherId}/headshot/67/current`
+                  }
+                  alt={livePlay.currentPlay.matchup.pitcher.fullname}
+                  className="player-headshot"
+                />
+                <h3>Vs</h3>
+                <img
+                  src={`https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/${currentBatterId}/headshot/67/current`
+                  }
+                  alt={livePlay.currentPlay.matchup.pitcher.fullname}
+                  className="player-headshot"
+                />
+                <p>
+                  Batter: <strong>{livePlay.currentPlay.matchup.batter.fullName}</strong> ({livePlay.currentPlay.matchup.batSide.code})
+                </p>
+              </div>
+              <p>
+                {/* {livePlay.currentPlay.matchup.} */}
+              </p>
+            </div>
+          )}
 
         </div>
 
