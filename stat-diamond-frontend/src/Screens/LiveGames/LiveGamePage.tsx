@@ -11,6 +11,7 @@ export function LiveGamePage() {
   const api = import.meta.env.VITE_API_URL
   const [boxScore, setBoxScore] = useState<any>(null)
   const [livePlay, setLivePlay] = useState<any>(null)
+  const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>('away')
 
   const getInningSymbol = (state: string | null) => {
     if (!state) return ''
@@ -97,7 +98,6 @@ export function LiveGamePage() {
   }
 
 
-
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -135,36 +135,58 @@ export function LiveGamePage() {
       </div>
 
 
-      {livePlay?.currentPlay && (
-        <div>
-          <div className="current_matchup">
-            <h3>Current Pitcher</h3>
-            <p>{livePlay.currentPlay.matchup.pitcher.fullName} {livePlay.currentPlay.matchup.pitchHand.code}</p>
-          </div>
 
-          <div className="current_matchup">
-            <h3>Current at Bat</h3>
-            <p>{livePlay.currentPlay.matchup.batter.fullName} {livePlay.currentPlay.matchup.batSide.code}</p>
-          </div>
+      <div className='play-by-play'>
+        <div className='play-by-play-left'>
 
-          {/* Pitch Sequence */}
-          {livePlay.currentPlay.playEvents && (
-            <div className="pitch-sequence">
-              <h4>Pitches:</h4>
-              {livePlay.currentPlay.playEvents
-                .filter((event: any) => event.isPitch)
-                .map((pitch: any, i: number) => (
-                  <span key={i} className="pitch">
-                    {pitch.details?.type?.code} {pitch.details?.startSpeed}mph - {pitch.details?.call?.description}
-                  </span>
-                ))}
-            </div>
-          )}
         </div>
-      )}
 
+        <div className='play-by-play-middle'>
 
+        </div>
 
+        <div className='play-by-play-right'>
+          <div className='team-toggle'>
+            <button
+              className={`toggle-btn ${selectedTeam == 'away' ? 'active' : ''}`}
+              onClick={() => setSelectedTeam('away')}
+            >
+              Away
+            </button>
+            <button
+              className={`toggle-btn ${selectedTeam == 'home' ? 'active' : ""}`}
+              onClick={() => setSelectedTeam('home')}
+            >
+              Home
+            </button>
+
+            {boxScore && (
+              <div className="lineup-content">
+                <h3>{boxScore[selectedTeam].team.name}</h3>
+                <div className="lineup-list">
+                  {[...boxScore[selectedTeam].battingOrder].map((batterId: number, index: number) => {
+                    const player = boxScore[selectedTeam].players[`ID${batterId}`]
+                    if (!player) return null
+                    return (
+                      <div key={batterId} className="lineup-item">
+                        <span className="lineup-order">{index + 1}</span>
+                        <div className="lineup-player">
+                          <div className="player-name">{player.person.fullName}</div>
+                          <div className="player-pos">{player.position.abbreviation}</div>
+                        </div>
+                        <div className="player-stats">
+                          <span>{player.stats.batting?.hits || 0}-{player.stats.batting?.atBats || 0}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
 
       {game.status_code === 'I' && (
         <div className="live-stats">
