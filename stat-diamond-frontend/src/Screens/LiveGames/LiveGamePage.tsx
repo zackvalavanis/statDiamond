@@ -97,7 +97,6 @@ export function LiveGamePage() {
     )
   }
 
-
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -137,7 +136,23 @@ export function LiveGamePage() {
 
 
       <div className='play-by-play'>
+
         <div className='play-by-play-left'>
+          <div className='play-by-play-history'>
+            {livePlay && (
+              <div className='pbp-content'>
+                {livePlay.details?.map((play: LivePlay, index: number) => {
+                  <div key={play.id}>
+
+
+                  </div>
+                })}
+
+
+              </div>
+            )}
+
+          </div>
 
         </div>
 
