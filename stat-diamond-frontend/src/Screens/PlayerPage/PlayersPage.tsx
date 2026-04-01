@@ -95,7 +95,10 @@ export function PlayersPage() {
 
 
   useEffect(() => {
-    setCurrentPage(1)
+    const fetchData = async () => {
+      setCurrentPage(1)
+    }
+    fetchData()
   }, [selectedTeam, selectedSeason, selectedPosition, searchQuery])
 
   const activeColumns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key))

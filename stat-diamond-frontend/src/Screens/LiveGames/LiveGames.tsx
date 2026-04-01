@@ -8,9 +8,13 @@ export function LiveGames() {
   const [liveGames, setLiveGames] = useState<LiveGame[]>([])
   const api = import.meta.env.VITE_API_URL
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
-  )
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })
 
   const formatGameTime = (isoString: string) => {
     const date = new Date(isoString)
@@ -18,7 +22,7 @@ export function LiveGames() {
     const timeString = date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      timeZone: 'America/New_York',
+      timeZone: 'America/Chicago',
       timeZoneName: 'short'
     })
 

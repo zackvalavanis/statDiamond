@@ -162,6 +162,15 @@ export interface LiveGame {
   outs: number
   game_type: string
   venue: string
+  about: {
+    inning: number
+  }
+  result: {
+    description: string
+  }
+  atBatIndex: number
+
+
 }
 
 

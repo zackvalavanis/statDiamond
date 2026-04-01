@@ -9,7 +9,9 @@ export function LiveGamePage() {
   const initialGame = location.state?.game as LiveGame
   const [game, setGame] = useState<LiveGame | null>(initialGame)
   const api = import.meta.env.VITE_API_URL
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [boxScore, setBoxScore] = useState<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [livePlay, setLivePlay] = useState<any>(null)
   const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>('away')
   const [currentBatterId, setCurrentBatterId] = useState<number | null>(null)
@@ -155,12 +157,11 @@ export function LiveGamePage() {
 
         <div className='play-by-play-left'>
           <div className='play-by-play-history'>
-            {livePlay && (
+            {livePlay?.allPlays && (
               <div className='pbp-content'>
-                {livePlay.details?.map((play: LivePlay, index: number) => {
-                  <div key={play.id}>
-
-
+                {livePlay.allPlays.slice(-10).reverse().map((play: LiveGame, index: number) => {
+                  <div key={play.atBatIndex || index} className="play-item">
+                    <p><strong>Inning {play.about?.inning}:</strong>{play.result?.description}</p>
                   </div>
                 })}
 
