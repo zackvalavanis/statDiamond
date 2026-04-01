@@ -13,7 +13,9 @@ export function LiveGamePage() {
   const [boxScore, setBoxScore] = useState<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [livePlay, setLivePlay] = useState<any>(null)
-  const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>('away')
+  const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>(() => {
+    return initialGame?.inning_state == 'Bottom' ? 'home' : 'away'
+  })
   const [currentBatterId, setCurrentBatterId] = useState<number | null>(null)
   const [currentPitcherId, setCurrentPitcherId] = useState<number | null>(null)
 
@@ -95,6 +97,7 @@ export function LiveGamePage() {
         const data = await res.json();
         setBoxScore(data.teams)
         setLivePlay(data)
+
       } catch (error) {
         console.error("error fetching boxscore", error);
       }
@@ -114,7 +117,7 @@ export function LiveGamePage() {
     )
   }
 
-  console.log(boxScore)
+
 
   return (
     <div className="live-game-page">
