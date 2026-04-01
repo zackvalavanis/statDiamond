@@ -114,7 +114,9 @@ export function LiveGamePage() {
     )
   }
 
-  // console.log(livePlay?.currentPlay.matchup)
+
+
+  // console.log(livePlay?.currentPlay)
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -152,25 +154,21 @@ export function LiveGamePage() {
       </div>
 
 
-
       <div className='play-by-play'>
 
         <div className='play-by-play-left'>
           <div className='play-by-play-history'>
             {livePlay?.allPlays && (
               <div className='pbp-content'>
-                {livePlay.allPlays.slice(-10).reverse().map((play: LiveGame, index: number) => {
-                  <div key={play.atBatIndex || index} className="play-item">
-                    <p><strong>Inning {play.about?.inning}:</strong>{play.result?.description}</p>
+                <h2>Live Updates</h2>
+                {livePlay.allPlays.slice(-10).reverse().map((play: LiveGame, index: number) => (
+                  <div key={play.atBatIndex || `play-${index}`} className="play-item">
+                    <p><strong>Inning {play.about?.halfInning === "Bottom" ? '▼' : '▲'} {play.about?.inning}:</strong> {play.result?.description}</p>
                   </div>
-                })}
-
-
+                ))}
               </div>
             )}
-
           </div>
-
         </div>
 
         <div className='play-by-play-center'>
@@ -215,13 +213,13 @@ export function LiveGamePage() {
         <div className='play-by-play-right'>
           <div className='team-toggle'>
             <button
-              className={`toggle-btn ${selectedTeam == 'away' ? 'active' : ''}`}
+              className={`toggle-btn ${selectedTeam === 'away' ? 'active' : ''}`}
               onClick={() => setSelectedTeam('away')}
             >
               Away
             </button>
             <button
-              className={`toggle-btn ${selectedTeam == 'home' ? 'active' : ""}`}
+              className={`toggle-btn ${selectedTeam === 'home' ? 'active' : ""}`}
               onClick={() => setSelectedTeam('home')}
             >
               Home
@@ -235,7 +233,7 @@ export function LiveGamePage() {
                     const player = boxScore[selectedTeam].players[`ID${batterId}`]
                     if (!player) return null
                     return (
-                      <div key={batterId} className="lineup-item">
+                      <div key={batterId} className={`lineup-item ${currentBatterId === batterId ? 'current-batter' : ''}`}>
                         <span className="lineup-order">{index + 1}</span>
                         <div className="lineup-player">
                           <div className="player-name">{player.person.fullName}</div>
@@ -255,28 +253,30 @@ export function LiveGamePage() {
         </div>
       </div>
 
-      {game.status_code === 'I' && (
-        <div className="live-stats">
-          <div className="live-indicator-small">
-            <div className="live-dot-small"></div>
-            Updates every 15s
+      {
+        game.status_code === 'I' && (
+          <div className="live-stats">
+            <div className="live-indicator-small">
+              <div className="live-dot-small"></div>
+              Updates every 15s
+            </div>
+            <div className="count-display">
+              <div className="count-item">
+                <span className="count-label">Balls</span>
+                <span className="count-value">{game.balls ?? '-'}</span>
+              </div>
+              <div className="count-item">
+                <span className="count-label">Strikes</span>
+                <span className="count-value">{game.strikes ?? '-'}</span>
+              </div>
+              <div className="count-item">
+                <span className="count-label">Outs</span>
+                <span className="count-value">{game.outs ?? '-'}</span>
+              </div>
+            </div>
           </div>
-          <div className="count-display">
-            <div className="count-item">
-              <span className="count-label">Balls</span>
-              <span className="count-value">{game.balls ?? '-'}</span>
-            </div>
-            <div className="count-item">
-              <span className="count-label">Strikes</span>
-              <span className="count-value">{game.strikes ?? '-'}</span>
-            </div>
-            <div className="count-item">
-              <span className="count-label">Outs</span>
-              <span className="count-value">{game.outs ?? '-'}</span>
-            </div>
-          </div>
-        </div>
-      )}
+        )
+      }
 
       <div className="game-details">
         <div className="detail-item">
@@ -304,8 +304,8 @@ export function LiveGamePage() {
                       <th>Name</th>
                       <th>Pos</th>
                       <th>AB</th>
-                      <th>R</th>
                       <th>H</th>
+                      <th>R</th>
                       <th>RBI</th>
                       <th>AVG</th>
                       <th>OBP</th>
@@ -321,8 +321,8 @@ export function LiveGamePage() {
                           <td>{player.person.fullName}</td>
                           <td>{player.position.abbreviation}</td>
                           <td>{player.stats.batting?.atBats || 0}</td>
-                          <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.hits || 0}</td>
+                          <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.rbi || 0}</td>
                           <td>{player.seasonStats.batting?.avg || 0}</td>
                           <td>{player.seasonStats.batting?.obp || 0}</td>
@@ -343,8 +343,8 @@ export function LiveGamePage() {
                       <th>Name</th>
                       <th>Pos</th>
                       <th>AB</th>
-                      <th>R</th>
                       <th>H</th>
+                      <th>R</th>
                       <th>RBI</th>
                       <th>AVG</th>
                       <th>OBP</th>
@@ -360,8 +360,8 @@ export function LiveGamePage() {
                           <td>{player.person.fullName}</td>
                           <td>{player.position.abbreviation}</td>
                           <td>{player.stats.batting?.atBats || 0}</td>
-                          <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.hits || 0}</td>
+                          <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.rbi || 0}</td>
                           <td>{player.seasonStats.batting?.avg || 0}</td>
                           <td>{player.seasonStats.batting?.obp || 0}</td>
@@ -378,11 +378,6 @@ export function LiveGamePage() {
 
 
       {/*Pitching box score*/}
-
-
-
-
-
 
       <div className='box-score'>
         {boxScore && (
@@ -471,6 +466,6 @@ export function LiveGamePage() {
 
 
 
-    </div>
+    </div >
   )
 }

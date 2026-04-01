@@ -164,6 +164,7 @@ export interface LiveGame {
   venue: string
   about: {
     inning: number
+    halfInning: string
   }
   result: {
     description: string
