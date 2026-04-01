@@ -114,9 +114,8 @@ export function LiveGamePage() {
     )
   }
 
+  console.log(boxScore)
 
-
-  // console.log(livePlay?.currentPlay)
   return (
     <div className="live-game-page">
       <div className="game-header">
@@ -161,8 +160,9 @@ export function LiveGamePage() {
             {livePlay?.allPlays && (
               <div className='pbp-content'>
                 <h2>Live Updates</h2>
-                {livePlay.allPlays.slice(-10).reverse().map((play: LiveGame, index: number) => (
-                  <div key={play.atBatIndex || `play-${index}`} className="play-item">
+                {livePlay.allPlays.slice().reverse().map((play: LiveGame, index: number) => (
+                  <div key={`${play.about?.inning}-${play.about?.halfInning}-${play.atBatIndex}-${index}`}
+                    className="play-item">
                     <p><strong>Inning {play.about?.halfInning === "Bottom" ? '▼' : '▲'} {play.about?.inning}:</strong> {play.result?.description}</p>
                   </div>
                 ))}
@@ -255,7 +255,7 @@ export function LiveGamePage() {
 
       {
         game.status_code === 'I' && (
-          <div className="live-stats">
+          <div className="live-stats" key="live-stats-container">
             <div className="live-indicator-small">
               <div className="live-dot-small"></div>
               Updates every 15s
@@ -305,10 +305,12 @@ export function LiveGamePage() {
                       <th>Pos</th>
                       <th>AB</th>
                       <th>H</th>
+                      <th>HR</th>
                       <th>R</th>
                       <th>RBI</th>
                       <th>AVG</th>
                       <th>OBP</th>
+
                     </tr>
                   </thead>
                   <tbody>
@@ -322,6 +324,7 @@ export function LiveGamePage() {
                           <td>{player.position.abbreviation}</td>
                           <td>{player.stats.batting?.atBats || 0}</td>
                           <td>{player.stats.batting?.hits || 0}</td>
+                          <td>{player.stats.batting?.homeRuns || 0}</td>
                           <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.rbi || 0}</td>
                           <td>{player.seasonStats.batting?.avg || 0}</td>
@@ -344,6 +347,7 @@ export function LiveGamePage() {
                       <th>Pos</th>
                       <th>AB</th>
                       <th>H</th>
+                      <th>HR</th>
                       <th>R</th>
                       <th>RBI</th>
                       <th>AVG</th>
@@ -361,6 +365,7 @@ export function LiveGamePage() {
                           <td>{player.position.abbreviation}</td>
                           <td>{player.stats.batting?.atBats || 0}</td>
                           <td>{player.stats.batting?.hits || 0}</td>
+                          <td>{player.stats.batting?.homeRuns || 0}</td>
                           <td>{player.stats.batting?.runs || 0}</td>
                           <td>{player.stats.batting?.rbi || 0}</td>
                           <td>{player.seasonStats.batting?.avg || 0}</td>

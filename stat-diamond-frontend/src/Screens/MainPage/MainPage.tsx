@@ -27,14 +27,25 @@ export function MainPage() {
         ])
         const data = await res.json()
         const data2 = await res2.json()
-        const top_batting_averages = data.sort((a: { AVG: number }, b: { AVG: number }) => (b.AVG || 0) - (a.AVG || 0)).slice(0, 10)
+
+        const top_batting_averages = [...data]
+          .sort((a, b) => (b.AVG || 0) - (a.AVG || 0))
+          .slice(0, 10)
         setTopBattingAvg(top_batting_averages)
-        const topHomeRun = (data.sort((a: { HR: number }, b: { HR: number }) => b.HR - a.HR).slice(0, 10))
+
+        const topHomeRun = [...data]
+          .sort((a, b) => (b.HR || 0) - (a.HR || 0))
+          .slice(0, 10)
         setTopHomeRun(topHomeRun)
-        const topSo = (data2.sort((a: { strikeouts: number }, b: { strikeouts: number }) => b.strikeouts - a.strikeouts).slice(0, 10))
+
+        const topSo = [...data2]
+          .sort((a, b) => (b.SO || 0) - (a.SO || 0))
+          .slice(0, 10)
         setSo(topSo)
+
         const topERA = data2.sort((a: { ERA: number }, b: { ERA: number }) => a.ERA - b.ERA).slice(0, 10)
         setTopERA(topERA)
+
       } catch (error) {
         console.error("There was an error", error)
       }
@@ -151,12 +162,7 @@ export function MainPage() {
 
         {/* Awards Section */}
         <div>
-
-
-
-
         </div>
-
       </div>
     </div>
   )
