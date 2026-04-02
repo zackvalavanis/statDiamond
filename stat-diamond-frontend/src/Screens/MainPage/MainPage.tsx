@@ -28,6 +28,8 @@ export function MainPage() {
         const data = await res.json()
         const data2 = await res2.json()
 
+        console.log('Sample player keys:', Object.keys(data[0] || {}))
+
         const top_batting_averages = [...data]
           .sort((a, b) => (b.AVG || 0) - (a.AVG || 0))
           .slice(0, 10)
@@ -50,6 +52,7 @@ export function MainPage() {
         const topERA = [...data2]
           .sort((a, b) => (a.ERA || 0) - (b.ERA || 0))
           .slice(0, 10)
+        console.log(topERA)
         setTopERA(topERA)
 
       } catch (error) {
@@ -57,7 +60,7 @@ export function MainPage() {
       }
     }
     handleFetchTopAverages()
-  }, [])
+  }, [api])
 
 
   const navigateToPlayer = (player: Player) => {
@@ -133,7 +136,7 @@ export function MainPage() {
                   <tr onClick={() => navigateToPlayer(leaders)} key={leaders.IDfg}>
                     <td>{index + 1}</td>
                     <td>{leaders.Name} {leaders.Position && `(${leaders.Position})`}</td>
-                    <td>{leaders.ERA ? Number(leaders.ERA).toFixed(2) : 'N/A'}</td>
+                    <td>{leaders.ERA ? Number(leaders.ERA).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
               </tbody>

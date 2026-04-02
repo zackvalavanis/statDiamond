@@ -28,15 +28,22 @@ export interface Player {
   ERA?: string
   SO?: string
   Position?: string | null
-  Dol?: string | null
   key_mlbam?: number
   key_bbref?: string
+  Dol?: string  // Salary
 }
 
 export interface PlayerSplit {
   season: string
   team: { id: number; name: string }
   stat: {
+    whip: number
+    era: number
+    earnedRuns: number
+    inningsPitched: string
+    saves: number
+    losses: number
+    wins: number
     gamesPlayed: number
     atBats: number
     plateAppearances: number
