@@ -22,8 +22,8 @@ export function MainPage() {
       try {
         const season = 2026;
         const [res, res2] = await Promise.all([
-          fetch(`${api}/api/stats/player/batting?start=${season}&end=${season}&min_pa=10`),
-          fetch(`${api}/api/stats/player/pitching?start=${season}&end=${season}&min_ip=5`)
+          fetch(`${api}/api/stats/player/batting-complete?start=${season}&min_pa=10`),
+          fetch(`${api}/api/stats/player/pitching-complete?start=${season}&end=${season}&min_ip=10`)
         ])
         const data = await res.json()
         const data2 = await res2.json()
@@ -34,7 +34,11 @@ export function MainPage() {
         setTopBattingAvg(top_batting_averages)
 
         const topHomeRun = [...data]
-          .sort((a, b) => (b.HR || 0) - (a.HR || 0))
+          .sort((a, b) => {
+            const aHR = Number(a.HR) || 0
+            const bHR = Number(b.HR) || 0
+            return bHR - aHR
+          })
           .slice(0, 10)
         setTopHomeRun(topHomeRun)
 
@@ -43,7 +47,9 @@ export function MainPage() {
           .slice(0, 10)
         setSo(topSo)
 
-        const topERA = data2.sort((a: { ERA: number }, b: { ERA: number }) => a.ERA - b.ERA).slice(0, 10)
+        const topERA = [...data2]
+          .sort((a, b) => (a.ERA || 0) - (b.ERA || 0))
+          .slice(0, 10)
         setTopERA(topERA)
 
       } catch (error) {

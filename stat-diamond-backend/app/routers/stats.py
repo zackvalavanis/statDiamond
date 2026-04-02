@@ -75,7 +75,6 @@ def clean_records(df: pd.DataFrame) -> list[dict]:
         for row in records
     ]
 
-
 @router.get("/player/batting")
 def get_batting_stats(
     start: int, 
@@ -84,7 +83,7 @@ def get_batting_stats(
     db: Session = Depends(get_db)
 ):
     try:
-        cache_key = f"batting_v2_{start}_{end}_{min_pa}"
+        cache_key = f"batting_mlb_v1_{start}_{end}_{min_pa}"
         
         # Check cache
         cached = db.query(CachedStats).filter(
@@ -97,20 +96,51 @@ def get_batting_stats(
             print(f"✅ CACHE HIT: {cache_key}")
             return cached.data
         
-        print(f"❌ CACHE MISS: {cache_key} - Fetching from FanGraphs...")
+        print(f"❌ CACHE MISS: Fetching from MLB Stats API...")
         
-        # Fetch from FanGraphs
-        df = batting_stats(start, end, qual=min_pa)
+        # Use MLB Stats API instead
+        url = f"https://statsapi.mlb.com/api/v1/stats?stats=season&season={start}&group=hitting&sportId=1"
+        res = requests.get(url)
+        mlb_data = res.json()
         
-        # Add MLB IDs and Positions
-        fg_to_mlb = get_id_mapping()
-        positions = get_all_positions(start)
+        players = []
+        for split in mlb_data.get('stats', []):
+            for player_stat in split.get('splits', []):
+                player = player_stat['player']
+                stats = player_stat['stat']
+                
+                # Apply PA qualifier
+                if stats.get('plateAppearances', 0) < min_pa:
+                    continue
+                
+                players.append({
+                    'IDfg': None,  # You'll need to map this
+                    'key_mlbam': player['id'],
+                    'Name': player['fullName'],
+                    'Position': player.get('primaryPosition', {}).get('abbreviation'),
+                    'Team': player_stat.get('team', {}).get('abbreviation'),
+                    'G': stats.get('gamesPlayed'),
+                    'PA': stats.get('plateAppearances'),
+                    'HR': stats.get('homeRuns'),
+                    'R': stats.get('runs'),
+                    'RBI': stats.get('rbi'),
+                    'SB': stats.get('stolenBases'),
+                    'AVG': float(stats.get('avg', 0)),
+                    'OBP': float(stats.get('obp', 0)),
+                    'SLG': float(stats.get('slg', 0)),
+                    'OPS': float(stats.get('ops', 0)),
+                })
         
-        df = df.copy()
-        df["key_mlbam"] = df["IDfg"].map(fg_to_mlb)
-        df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
+        # Cache with smart duration
+        current_year = datetime.utcnow().year
+        if start < current_year:
+            cache_duration = timedelta(days=30)
+        elif start == current_year:
+            cache_duration = timedelta(minutes=30)  # Shorter for live season
+        else:
+            cache_duration = timedelta(days=7)
         
-        data = clean_records(df)
+        expires_at = datetime.utcnow() + cache_duration
         
         # Upsert to cache
         existing = db.query(CachedStats).filter(
@@ -119,25 +149,25 @@ def get_batting_stats(
         ).first()
         
         if existing:
-            existing.data = data
+            existing.data = players
             existing.cached_at = datetime.utcnow()
-            existing.expires_at = datetime.utcnow() + timedelta(hours=24)
+            existing.expires_at = expires_at
         else:
             new_cache = CachedStats(
                 stat_type=cache_key,
                 season=start,
-                data=data,
-                expires_at=datetime.utcnow() + timedelta(hours=24)
+                data=players,
+                expires_at=expires_at
             )
             db.add(new_cache)
         
         db.commit()
-        print(f"💾 CACHED: {cache_key}")
-        return data
+        print(f"💾 CACHED: {cache_key} ({len(players)} players)")
+        return players
         
     except Exception as e:
         db.rollback()
-        print(f"❌ ERROR in get_batting_stats: {str(e)}")
+        print(f"❌ ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -151,7 +181,7 @@ def get_pitching_stats(
     db: Session = Depends(get_db)
 ):
     try:
-        cache_key = f"pitching_v2_{start}_{end}_{min_ip}"
+        cache_key = f"pitching_v4_{start}_{end}_{min_ip}"
         
         # Check cache
         cached = db.query(CachedStats).filter(
@@ -178,7 +208,22 @@ def get_pitching_stats(
         df["Position"] = df["Name"].map(lambda n: positions.get(normalize_name(n)))
         
         data = clean_records(df)
+
+        current_year = datetime.utcnow().year
+
+        if start < current_year: 
+            cache_duration = timedelta(days=30)
+        elif start == current_year: 
+            if min_ip < 50: 
+                cache_duration = timedelta(minutes=30)
+            else: 
+                cache_duration = timedelta(hours=1)
+        else: 
+            cache_duration = timedelta(days=7)
+
+        expires_at = datetime.utcnow() + cache_duration
         
+
         # Upsert to cache
         existing = db.query(CachedStats).filter(
             CachedStats.stat_type == cache_key,
@@ -188,13 +233,13 @@ def get_pitching_stats(
         if existing:
             existing.data = data
             existing.cached_at = datetime.utcnow()
-            existing.expires_at = datetime.utcnow() + timedelta(hours=24)
+            existing.expires_at = expires_at
         else:
             new_cache = CachedStats(
                 stat_type=cache_key,
                 season=start,
                 data=data,
-                expires_at=datetime.utcnow() + timedelta(hours=24)
+                expires_at=expires_at
             )
             db.add(new_cache)
         
@@ -242,6 +287,296 @@ def get_player_ids(player_name: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/player/batting-complete")
+def get_batting_stats_complete(
+    start: int,
+    min_pa: int = 0,
+    db: Session = Depends(get_db)
+):
+    """Get comprehensive batting stats by fetching all team rosters (includes everyone)"""
+    try:
+        cache_key = f"batting_complete_{start}_{min_pa}"
+        
+        # Check cache
+        cached = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start,
+            CachedStats.expires_at > datetime.utcnow()
+        ).first()
+        
+        if cached:
+            print(f"✅ CACHE HIT: {cache_key}")
+            return cached.data
+        
+        print(f"🔄 Fetching complete roster stats from MLB Stats API...")
+        
+        all_players = []
+        
+        # Iterate through all 30 teams
+        for team_name, team_id in MLB_TEAM_IDS.items():
+            try:
+                # Get active roster with stats
+                url = f"https://statsapi.mlb.com/api/v1/teams/{team_id}/roster/Active?season={start}&hydrate=person(stats(type=season,season={start},group=hitting))"
+                res = requests.get(url)
+                data = res.json()
+                
+                roster = data.get('roster', [])
+                
+                for player_entry in roster:
+                    player_info = player_entry.get('person', {})
+                    player_id = player_info.get('id')
+                    
+                    # Get stats from hydrated data
+                    stats_list = player_info.get('stats', [])
+                    
+                    if not stats_list:
+                        continue
+                    
+                    # Get the season stats (first entry should be hitting stats)
+                    season_stats = None
+                    for stat_group in stats_list:
+                        if stat_group.get('group', {}).get('displayName') == 'hitting':
+                            splits = stat_group.get('splits', [])
+                            if splits:
+                                season_stats = splits[0].get('stat', {})
+                                break
+                    
+                    if not season_stats:
+                        continue
+                    
+                    # Apply PA filter
+                    pa = season_stats.get('plateAppearances', 0)
+                    if pa < min_pa:
+                        continue
+                    
+                    # Get position
+                    position = player_entry.get('position', {}).get('abbreviation', 'N/A')
+                    
+                    # Build player record
+                    player_record = {
+                        'key_mlbam': player_id,
+                        'Name': player_info.get('fullName'),
+                        'Team': team_name,
+                        'Position': position,
+                        
+                        # Counting stats
+                        'G': season_stats.get('gamesPlayed', 0),
+                        'PA': pa,
+                        'AB': season_stats.get('atBats', 0),
+                        'R': season_stats.get('runs', 0),
+                        'H': season_stats.get('hits', 0),
+                        'HR': season_stats.get('homeRuns', 0),
+                        'RBI': season_stats.get('rbi', 0),
+                        'SB': season_stats.get('stolenBases', 0),
+                        'BB': season_stats.get('baseOnBalls', 0),
+                        'SO': season_stats.get('strikeOuts', 0),
+                        '2B': season_stats.get('doubles', 0),
+                        '3B': season_stats.get('triples', 0),
+                        
+                        # Rate stats
+                        'AVG': float(season_stats.get('avg', '0') or 0),
+                        'OBP': float(season_stats.get('obp', '0') or 0),
+                        'SLG': float(season_stats.get('slg', '0') or 0),
+                        'OPS': float(season_stats.get('ops', '0') or 0),
+                    }
+                    
+                    all_players.append(player_record)
+                    
+            except Exception as e:
+                print(f"⚠️ Error fetching {team_name} roster: {e}")
+                continue
+        
+        print(f"📊 Fetched {len(all_players)} players total")
+        
+        # Cache with smart duration
+        current_year = datetime.utcnow().year
+        
+        if start < current_year:
+            cache_duration = timedelta(days=30)
+        elif start == current_year:
+            cache_duration = timedelta(minutes=15)  # Live season - 15 min cache
+        else:
+            cache_duration = timedelta(days=7)
+        
+        expires_at = datetime.utcnow() + cache_duration
+        
+        # Store in cache
+        existing = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start
+        ).first()
+        
+        if existing:
+            existing.data = all_players
+            existing.cached_at = datetime.utcnow()
+            existing.expires_at = expires_at
+        else:
+            new_cache = CachedStats(
+                stat_type=cache_key,
+                season=start,
+                data=all_players,
+                expires_at=expires_at
+            )
+            db.add(new_cache)
+        
+        db.commit()
+        print(f"💾 CACHED {len(all_players)} players (expires in {cache_duration})")
+        return all_players
+        
+    except Exception as e:
+        db.rollback()
+        print(f"❌ ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+######### Pitching Stats
+
+@router.get("/player/pitching-complete")
+def get_pitching_stats_complete(
+    start: int,
+    min_ip: int = 10,
+    db: Session = Depends(get_db)
+):
+    """Get comprehensive pitching stats by fetching all team rosters (includes everyone)"""
+    try:
+        cache_key = f"pitching_complete_{start}_{min_ip}"
+        
+        # Check cache
+        cached = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start,
+            CachedStats.expires_at > datetime.utcnow()
+        ).first()
+        
+        if cached:
+            print(f"✅ CACHE HIT: {cache_key}")
+            return cached.data
+        
+        print(f"🔄 Fetching complete roster stats from MLB Stats API...")
+        
+        all_players = []
+        
+        # Iterate through all 30 teams
+        for team_name, team_id in MLB_TEAM_IDS.items():
+            try:
+                # Get active roster with stats
+                url = f"https://statsapi.mlb.com/api/v1/teams/{team_id}/roster/Active?season={start}&hydrate=person(stats(type=season,season={start},group=pitching))"
+                res = requests.get(url)
+                data = res.json()
+                
+                roster = data.get('roster', [])
+                
+                for player_entry in roster:
+                    player_info = player_entry.get('person', {})
+                    player_id = player_info.get('id')
+                    
+                    # Get stats from hydrated data
+                    stats_list = player_info.get('stats', [])
+                    
+                    if not stats_list:
+                        continue
+                    
+                    # Get the season stats (first entry should be hitting stats)
+                    season_stats = None
+                    for stat_group in stats_list:
+                        if stat_group.get('group', {}).get('displayName') == 'pitching':
+                            splits = stat_group.get('splits', [])
+                            if splits:
+                                season_stats = splits[0].get('stat', {})
+                                break
+                    
+                    if not season_stats:
+                        continue
+                    
+                    # Apply PA filter
+                    ip = float(season_stats.get('inningsPitched', '0') or 0)
+                    if ip < min_ip:
+                        continue
+                    
+                    # Get position
+                    position = player_entry.get('position', {}).get('abbreviation', 'N/A')
+                    
+                    # Build player record
+                    player_record = {
+                        'key_mlbam': player_id,
+                        'Name': player_info.get('fullName'),
+                        'Team': team_name,
+                        'Position': position,
+                        
+                        # Counting stats
+                        'G': season_stats.get('gamesPlayed', 0),
+                        'GS': season_stats.get('gamesStarted', 0),
+                        'W': season_stats.get('wins', 0),
+                        'L': season_stats.get('losses', 0),
+                        'SV': season_stats.get('saves', 0),
+                        'IP': ip,
+                        'H': season_stats.get('hits', 0),
+                        'R': season_stats.get('runs', 0),
+                        'ER': season_stats.get('earnedRuns', 0),
+                        'HR': season_stats.get('homeRuns', 0),
+                        'BB': season_stats.get('baseOnBalls', 0),
+                        'SO': season_stats.get('strikeOuts', 0),
+                        
+                        # Rate stats
+                        'ERA': float(season_stats.get('era', '0') or 0),
+                        'WHIP': float(season_stats.get('whip', '0') or 0),
+                        'K/9': float(season_stats.get('strikeoutsPer9Inn', '0') or 0),
+                        'BB/9': float(season_stats.get('walksPer9Inn', '0') or 0),
+                        'AVG': float(season_stats.get('avg', '0') or 0),  # Opponent batting average
+                    }
+                    
+                    all_players.append(player_record)
+                    
+            except Exception as e:
+                print(f"⚠️ Error fetching {team_name} roster: {e}")
+                continue
+        
+        print(f"📊 Fetched {len(all_players)} pitchers total")
+        
+        # Cache with smart duration
+        current_year = datetime.utcnow().year
+        
+        if start < current_year:
+            cache_duration = timedelta(days=30)
+        elif start == current_year:
+            cache_duration = timedelta(minutes=15)  # Live season - 15 min cache
+        else:
+            cache_duration = timedelta(days=7)
+        
+        expires_at = datetime.utcnow() + cache_duration
+        
+        # Store in cache
+        existing = db.query(CachedStats).filter(
+            CachedStats.stat_type == cache_key,
+            CachedStats.season == start
+        ).first()
+        
+        if existing:
+            existing.data = all_players
+            existing.cached_at = datetime.utcnow()
+            existing.expires_at = expires_at
+        else:
+            new_cache = CachedStats(
+                stat_type=cache_key,
+                season=start,
+                data=all_players,
+                expires_at=expires_at
+            )
+            db.add(new_cache)
+        
+        db.commit()
+        print(f"💾 CACHED {len(all_players)} players (expires in {cache_duration})")
+        return all_players
+        
+    except Exception as e:
+        db.rollback()
+        print(f"❌ ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/live-games")
 def get_live_games(date: str = None):
