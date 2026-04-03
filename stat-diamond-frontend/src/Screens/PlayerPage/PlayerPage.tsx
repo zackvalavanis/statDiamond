@@ -9,7 +9,6 @@ export function PlayerPage() {
   const player = location.state?.player as Player
   const [yearlyStats, setYearlyStats] = useState<PlayerSplit[]>([])
 
-  // Fix: isPitcher logic was correct, isHitter was wrong
   const isPitcher = player?.Position === "P" || player?.Position === "SP" || player?.Position === 'RP'
 
   const mlbStats = yearlyStats.filter((split) => split.team)
