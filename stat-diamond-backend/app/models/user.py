@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
@@ -16,7 +16,7 @@ class User(Base):
   hashed_password = Column(String, nullable=False) # we never store plane passwords itll be hashed
   name = Column(String, nullable=False) #Nullable=false means that it is required
   created_at = Column(DateTime, default=datetime.utcnow) #adds a timestamp 
-
+  is_active = Column(Boolean, nullable=False, default=True)
   favorite_players = relationship("FavoritePlayer", back_populates="user")
   favorite_teams = relationship("FavoriteTeam", back_populates="user")
 

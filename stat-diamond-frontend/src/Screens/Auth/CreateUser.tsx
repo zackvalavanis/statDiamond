@@ -2,68 +2,81 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { CreateUserInfo } from "../../types/types"
 
-
-
-const fields = [
-  { name: 'first_name', label: 'Name', type: 'text' },
-  { name: 'email', label: 'email', type: 'email' },
-  { name: 'password', label: 'password', type: 'password' },
-]
-
-
 export function CreateUser() {
   const navigate = useNavigate()
   const api = import.meta.env.VITE_API_URL
+
   const [formData, setFormData] = useState<CreateUserInfo>({
+    email: "",
     name: "",
-    email: '',
-    password: ''
+    password: "",
   })
 
-  const handleCreateUser = async (formData: CreateUserInfo) => {
+  const handleCreateUser = async () => {
     try {
       const res = await fetch(`${api}/api/auth/signup`, {
-        "method": 'POST',
+        method: "POST",
         headers: {
-          'content-type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
+
       const data = await res.json()
-      console.log('user data', data)
-      if (data) {
-        alert("User Created")
+
+      if (!res.ok) {
+        throw new Error(
+          typeof data.detail === "string"
+            ? data.detail
+            : JSON.stringify(data.detail)
+        )
       }
-      navigate('/')
-    } catch (error) {
-      console.log(error)
+
+      alert("User Created")
+      navigate("/")
+    } catch (error: any) {
+      console.error(error)
+      alert(error.message)
     }
   }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    handleCreateUser(formData)
-    console.log(formData)
+    handleCreateUser()
   }
 
   return (
     <div>
       <form onSubmit={submit}>
-        {fields.map((field) => (
-          <div key={field.name}>
-            <label htmlFor={field.name}>{field.label}</label>
-            <input
-              id={field.name}
-              name={field.name}
-              type={field.type}
-              value={formData[field.name as keyof CreateUserInfo]}
-              onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-            ></input>
-          </div>
-        ))
-        }
-        <button type='submit'>Create Account</button>
-      </form >
-    </div >
+        <input
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
+        />
+
+        <input
+          type="text"
+          placeholder="Name"
+          value={formData.name}
+          onChange={(e) =>
+            setFormData({ ...formData, name: e.target.value })
+          }
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+        />
+
+        <button type="submit">Create Account</button>
+      </form>
+    </div>
   )
 }
