@@ -177,8 +177,27 @@ export interface LiveGame {
     description: string
   }
   atBatIndex: number
+}
 
-
+export interface Article {
+  id: number
+  headline: string
+  description?: string
+  published?: string
+  images?: {
+    name: string
+    url: string
+    height?: number
+    width?: number
+  }[]  // ← Array notation
+  links?: {
+    web?: {
+      href: string
+    }
+  }
+  categories?: {
+    description: string
+  }[]
 }
 
 

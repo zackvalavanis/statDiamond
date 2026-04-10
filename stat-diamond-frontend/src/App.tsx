@@ -16,6 +16,7 @@ import { PlayerPage } from './Screens/PlayerPage/PlayerPage'
 import { News } from './Screens/News /News'
 import { LiveGames } from './Screens/LiveGames/LiveGames'
 import { LiveGamePage } from './Screens/LiveGames/LiveGamePage'
+import { Story } from './Screens/News /Story'
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
         { path: `/teams/:teamId`, element: <TeamDetails /> },
         { path: '/advanced-stats', element: <AdvancedStatsPage /> },
         { path: '/news', element: <News /> },
+        { path: '/news/:id', element: <Story /> },
         { path: '/live-games', element: <LiveGames /> },
         { path: '/live-games/:gameId', element: <LiveGamePage /> }
       ]
