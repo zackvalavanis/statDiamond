@@ -112,7 +112,7 @@ export function TeamDetails() {
     <div className="team-page">
       {/* HEADER */}
       <div className="team-header">
-        <h1>{teamName}</h1>
+        {/* <h1>{teamName}</h1> */}
 
         {teamCapId > 0 && (
           <img

@@ -17,28 +17,31 @@ const seasons = Array.from({ length: 2026 - 1900 + 1 }, (_, i) => 2026 - i)
 export function Teams() {
   const [standings, setStandings] = useState<StandingsRow[]>([]);
   const [season, setSeason] = useState<number>(2026)
+  const [loading, setLoading] = useState(false)
   const api = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const handleFetchStandings = async () => {
+      setLoading(true)
       try {
         const res = await fetch(`${api}/api/standings?season=${season}`)
         const data: StandingsRow[] = await res.json()
 
-        // console.log('API response:', data)
         if (Array.isArray(data)) {
           setStandings(data)
         } else {
           console.error('Expected array, got:', typeof data)
-          setStandings([])  // Set to empty array
+          setStandings([])
         }
       } catch (error) {
         console.log(error)
-        setStandings([])  // Set to empty array on error
+        setStandings([])
+      } finally {
+        setLoading(false)
       }
     }
     handleFetchStandings()
-  }, [season])
+  }, [season, api])
 
   // Group by league, then by division
   const leagues: Record<string, Record<string, StandingsRow[]>> = {}
@@ -47,6 +50,14 @@ export function Teams() {
     if (!leagues[row.league][row.division]) leagues[row.league][row.division] = []
     leagues[row.league][row.division].push(row)
   })
+
+  if (loading) {
+    return (
+      <div className="teams-page">
+        <div className="loading-state">Loading standings...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="teams-page">
@@ -89,9 +100,14 @@ export function Teams() {
                       })
                       .map((team) => {
                         return (
-                          < tr key={team.Tm} >
-                            <td>
-                              <Link to={`/teams/${team.Tm}`}>{team.Tm}</Link>
+                          <tr key={team.Tm} className="team-row">
+                            <td className="team-name">
+                              <Link
+                                to={`/teams/${encodeURIComponent(team.Tm)}`}
+                                className="team-link"
+                              >
+                                {team.Tm}
+                              </Link>
                             </td>
                             <td>{team.W}</td>
                             <td>{team.L}</td>
@@ -107,6 +123,6 @@ export function Teams() {
           </div>
         ))}
       </div>
-    </div >
+    </div>
   )
 }

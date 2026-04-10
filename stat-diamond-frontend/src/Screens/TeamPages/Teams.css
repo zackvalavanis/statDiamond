@@ -32,6 +32,44 @@
   color: #b8b5ad;
 }
 
+/* Add to Teams.css */
+
+.loading-state {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.team-row {
+  transition: all 0.10s ease;
+}
+
+.team-row:hover {
+  background: #161b26;
+}
+
+.team-name {
+  font-weight: 600;
+}
+
+.team-link {
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  padding: 4px 0;
+  transition: color 0.15s ease;
+}
+
+.team-link:hover {
+  color: #c9a84c;
+}
+
+.team-link:active {
+  transform: scale(0.98);
+}
+
 .select-season {
   appearance: none;
   -webkit-appearance: none;
