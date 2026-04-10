@@ -1,8 +1,7 @@
-import { useParams } from 'react-router-dom'
-import './TeamDetails.css'
-import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 import type { Roster } from '../../types/types'
-import { useNavigate } from 'react-router-dom'
+import './TeamDetails.css'
 
 const MLB_TEAM_CAP_IDS: Record<string, number> = {
   'Arizona Diamondbacks': 109,
@@ -35,136 +34,181 @@ const MLB_TEAM_CAP_IDS: Record<string, number> = {
   'Texas Rangers': 140,
   'Toronto Blue Jays': 141,
   'Washington Nationals': 120
-};
+}
+
+const ID_TO_TEAM: Record<number, string> = Object.fromEntries(
+  Object.entries(MLB_TEAM_CAP_IDS).map(([k, v]) => [v, k])
+)
 
 export function TeamDetails() {
   const { teamId } = useParams()
-  const [roster, setRoster] = useState<Roster[]>([])
+  const navigate = useNavigate()
   const api = import.meta.env.VITE_API_URL
-  const team_id = teamId && teamId in MLB_TEAM_CAP_IDS ? MLB_TEAM_CAP_IDS[teamId] : 0
-  const hitters = roster.filter(p => p.player_type === 'hitter' && (p.AB || 0) > 3)
-  const pitchers = roster.filter(p => p.player_type === 'pitcher' && (p.IP || 0) > 1)
-  const navigate = useNavigate();
 
-  useEffect(() => {
+  const [roster, setRoster] = useState<Roster[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-
-    const handleGetTeam = async (teamId: string) => {
-      try {
-        const res = await fetch(`${api}/api/teams/${teamId}/roster`)
-        const data = await res.json()
-        setRoster(data)
-
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    handleGetTeam(teamId!)
-
+  const teamName = useMemo(() => {
+    if (!teamId) return ''
+    const decoded = decodeURIComponent(teamId)
+    if (!isNaN(Number(decoded))) return ID_TO_TEAM[Number(decoded)] ?? ''
+    return decoded
   }, [teamId])
 
-  const handlePlayerRouter = (player: Roster) => {
-    navigate(`/player/${player.IDfg}`, { state: { player } })
+  const teamCapId = MLB_TEAM_CAP_IDS[teamName] ?? 0
+
+  useEffect(() => {
+    if (!teamName) return
+
+    const controller = new AbortController()
+
+    const load = async () => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const res = await fetch(
+          `${api}/api/teams/${encodeURIComponent(teamName)}/roster?season=2026`,
+          { signal: controller.signal }
+        )
+
+        const data = await res.json()
+
+        if (!res.ok) throw new Error(data?.detail || 'Failed request')
+        if (!Array.isArray(data)) throw new Error('Bad data format')
+
+        setRoster(data)
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setError(err.message)
+          setRoster([])
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
+    return () => controller.abort()
+  }, [teamName, api])
+
+  const hitters = useMemo(
+    () => roster.filter(p => p.player_type === 'hitter'),
+    [roster]
+  )
+
+  const pitchers = useMemo(
+    () => roster.filter(p => p.player_type === 'pitcher'),
+    [roster]
+  )
+
+  const goToPlayer = (p: Roster) => {
+    if (!p.key_mlbam) return
+    navigate(`/player/${p.key_mlbam}`, { state: { player: p } })
   }
 
-
   return (
-    <div className='team-page'>
-      <h1>{teamId}</h1>
-      <img
-        src={`https://www.mlbstatic.com/team-logos/team-cap-on-dark/${team_id}.svg`}
-        alt={teamId || ''}
-        className="player-headshot"
-      />
-      <h1>Hitting</h1>
-      <table className='team-details-table'>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Position</th>
-            <th>WAR</th>
-            <th>AB</th>
-            <th>H</th>
-            <th>2B</th>
-            <th>3B</th>
-            <th>HR</th>
-            <th>BB</th>
-            <th>RBI</th>
-            <th>AVG</th>
-            <th>OBP</th>
-            <th>SLG</th>
-            <th>K</th>
-            <th>SB</th>
+    <div className="team-page">
+      {/* HEADER */}
+      <div className="team-header">
+        <h1>{teamName}</h1>
 
-          </tr>
-        </thead>
-        <tbody>
-          {hitters.sort((a, b) => (b.AB || 0) - (a.AB || 0)).map((player, index) => (
-            <tr onClick={() => handlePlayerRouter(player)} key={player.IDfg} style={{ cursor: 'pointer' }}>
-              <td>{index + 1}</td>
-              <td>{player.Name}</td>
-              <td>{player.Age}</td>
-              <td>{player.Position}</td>
-              <td>{player.WAR?.toFixed(2)}</td>
-              <td>{player.AB}</td>
-              <td>{player['H']}</td>
-              <td>{player['2B']}</td>
-              <td>{player['3B']}</td>
-              <td>{player.HR}</td>
-              <td>{player.BB}</td>
-              <td>{player.RBI}</td>
-              <td>{player.AVG?.toFixed(3)}</td>
-              <td>{player.OBP?.toFixed(3)}</td>
-              <td>{player.SLG?.toFixed(3)}</td>
-              <td>{player.K}</td>
-              <td>{player.SB}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        {teamCapId > 0 && (
+          <img
+            src={`https://www.mlbstatic.com/team-logos/team-cap-on-dark/${teamCapId}.svg`}
+            alt={teamName}
+            className="team-logo"
+          />
+        )}
+      </div>
 
-      <h1>Pitching</h1>
-      <table className='team-details-table'>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Position</th>
-            <th>W</th>
-            <th>L</th>
-            <th>ERA</th>
-            <th>G</th>
-            <th>GS</th>
-            <th>IP</th>
-            <th>K</th>
-            <th>BB</th>
-            <th>WHIP</th>
+      {loading && <p className="status">Loading roster...</p>}
+      {error && <p className="error">{error}</p>}
 
-          </tr>
-        </thead>
-        <tbody>
-          {pitchers.sort((a, b) => (b.IP || 0) - (a.IP || 0)).map((player, index) => (
-            <tr onClick={() => handlePlayerRouter(player)} key={player.IDfg} style={{ cursor: 'pointer' }}>
-              <td>{index + 1}</td>
-              <td>{player.Name}</td>
-              <td>{player.Age}</td>
-              <td>{player.Position}</td>
-              <td>{player.W}</td>
-              <td>{player.L}</td>
-              <td>{player.ERA?.toFixed(2)}</td>
-              <td>{player.G}</td>
-              <td>{player.GS}</td>
-              <td>{player.IP?.toFixed(1)}</td>
-              <td>{player.SO}</td>
-              <td>{player.BB}</td>
-              <td>{player.WHIP?.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {!loading && !error && roster.length === 0 && (
+        <p className="status">No roster data found.</p>
+      )}
+
+      {/* ================= HITTERS ================= */}
+      {!loading && !error && hitters.length > 0 && (
+        <div className="table-section">
+          <h2>Hitters</h2>
+
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>POS</th>
+                <th>AB</th>
+                <th>H</th>
+                <th>HR</th>
+                <th>RBI</th>
+                <th>AVG</th>
+                <th>OBP</th>
+                <th>SLG</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {hitters.map((p, index) => (
+                <tr key={p.key_mlbam} onClick={() => goToPlayer(p)} style={{ cursor: 'pointer' }}>
+                  <td>{index + 1}</td>
+                  <td className="name">{p.Name}</td>
+                  <td>{p.Position}</td>
+                  <td>{p.AB ?? 0}</td>
+                  <td>{p.H ?? 0}</td>
+                  <td>{p.HR ?? 0}</td>
+                  <td>{p.RBI ?? 0}</td>
+                  <td>{typeof p.AVG === 'number' ? p.AVG.toFixed(3) : '.000'}</td>
+                  <td>{typeof p.OBP === 'number' ? p.OBP.toFixed(3) : '.000'}</td>
+                  <td>{typeof p.SLG === 'number' ? p.SLG.toFixed(3) : '.000'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ================= PITCHERS ================= */}
+      {!loading && !error && pitchers.length > 0 && (
+        <div className="table-section">
+          <h2>Pitchers</h2>
+
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>IP</th>
+                <th>ERA</th>
+                <th>SO</th>
+                <th>BB</th>
+                <th>W</th>
+                <th>L</th>
+                <th>WHIP</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {pitchers.map((p, index) => (
+                <tr key={p.key_mlbam} onClick={() => goToPlayer(p)} style={{ cursor: 'pointer' }}>
+                  <td>{index + 1}</td>
+                  <td className="name">{p.Name}</td>
+                  <td>{typeof p.IP === 'number' ? p.IP.toFixed(1) : '0.0'}</td>
+                  <td>{typeof p.ERA === 'number' ? p.ERA.toFixed(2) : '0.00'}</td>
+                  <td>{p.SO ?? 0}</td>
+                  <td>{p.BB ?? 0}</td>
+                  <td>{p.W ?? 0}</td>
+                  <td>{p.L ?? 0}</td>
+                  <td>{typeof p.WHIP === 'number' ? p.WHIP.toFixed(2) : '0.00'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

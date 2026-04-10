@@ -28,9 +28,9 @@ export function Footer() {
                 <Link to="/create-account">New Account</Link>
               </>
             )}
-            <Link to='advanced-stats'>Advanced Stats</Link>
-            <Link to='/player'>Hitting Stats</Link>
-            <Link to='/player'>Pitching Stats</Link>
+            {/* <Link to='advanced-stats'>Advanced Stats</Link> */}
+            <Link to='/player'>Player Stats</Link>
+            {/* <Link to='/player'>Pitching Stats</Link> */}
           </div>
         </footer>
       </div>

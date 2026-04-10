@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { CreateUserInfo } from "../../types/types"
+import './CreateUser.css'
 
 export function CreateUser() {
   const navigate = useNavigate()
@@ -46,37 +47,40 @@ export function CreateUser() {
   }
 
   return (
-    <div>
-      <form onSubmit={submit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(e) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
-        />
+    <div className='create-user-page'>
+      <div className='form-modal'>
+        <form onSubmit={submit} className='form'>
+          <input
+            className="label-create-user-page"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
-        />
+          <input
+            type="text"
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
 
-        <button type="submit">Create Account</button>
-      </form>
+          <button type="submit">Create Account</button>
+        </form>
+      </div>
     </div>
   )
 }

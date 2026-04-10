@@ -58,3 +58,36 @@ def get_favorite_players(
   ).all()
 
   return favorites
+
+@router.post("/teams", response_model=FavoriteTeamResponse, status_code=status.HTTP_201_CREATED)
+def add_favorite_team(
+    team_data: FavoriteTeamCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Add a team to user's favorites"""
+
+    # Check if already exists
+    existing = db.query(FavoriteTeam).filter(
+        FavoriteTeam.user_id == current_user.id,
+        FavoriteTeam.team_id == team_data.team_id
+    ).first()
+
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Team already in favorites"
+        )
+
+    # Create new favorite team
+    favorite = FavoriteTeam(
+        user_id=current_user.id,
+        team_id=team_data.team_id,
+        team_name=team_data.team_name
+    )
+
+    db.add(favorite)
+    db.commit()
+    db.refresh(favorite)
+
+    return favorite

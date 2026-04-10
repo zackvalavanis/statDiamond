@@ -25,7 +25,7 @@ export function Teams() {
         const res = await fetch(`${api}/api/standings?season=${season}`)
         const data: StandingsRow[] = await res.json()
 
-        console.log('API response:', data)
+        // console.log('API response:', data)
         if (Array.isArray(data)) {
           setStandings(data)
         } else {

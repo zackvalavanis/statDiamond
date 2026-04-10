@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../Context/UseAuth"
 import type { FavoritePlayer } from "../../types/types"
-
+import './Profile.css'
 
 
 export function Profile() {
@@ -45,20 +45,20 @@ export function Profile() {
   }
 
   return (
-    <div>
+    <div className="profile-page">
       <div>
         <h1>Welcome {user?.name}</h1>
       </div>
 
       <div>
         <h1>
-          Favorite Teams:
+          Your Teams:
         </h1>
       </div>
 
       <div>
         <h1>
-          Favorite Players:
+          Your Players:
         </h1>
         {favoritePlayers.map((player) => (
           <div key={player.id}>
